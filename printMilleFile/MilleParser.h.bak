@@ -1,0 +1,174 @@
+#ifndef MilleParser_h
+#define MilleParser_h
+
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <map>
+#include "Mille.h"
+
+
+
+
+class MilleParser {
+
+ public:
+  
+  MilleParser(std::string fileName,std::string outFileName, bool debug=false);
+  ~MilleParser();
+
+  void Analyze(int opt, int max);
+
+ private:
+
+  std::string m_fileName,m_outFileName;
+  bool m_debug;
+  //Mille* m_mille;
+
+};
+
+
+
+
+
+class TrackAlignObj {
+ public:
+  TrackAlignObj() {
+    //derLC = new float
+    clear();
+  }
+  ~TrackAlignObj() {
+  }
+  void clear() {
+    m_layer = -1;
+    m_res.clear();
+    m_reserr.clear();
+    for(int i=0;i!=5;++i) {
+      m_derLC[i].clear();
+    }
+    m_derGL.clear();
+    
+  }
+  bool ok() {
+    if(m_layer<0) return false;
+    if(m_res.size()!=3) return false;
+    if(m_reserr.size()!=3) return false;
+    for(int i=0;i!=5;++i) {
+      if(m_derLC[i].size()!=3) return false;
+    }
+    
+    for(std::map<int,std::vector<float> >::const_iterator i=m_derGL.begin();i!=m_derGL.end();++i) {
+      if(i->second.size()!=3) return false;
+      //check for invalid id
+      if(i->first==0) return false;
+    }
+    return true;
+  }
+
+
+  void Layer(std::string lstr) { 
+    std::istringstream iss(lstr);
+    iss>>m_layer;
+  }
+  int GetLayer() { return m_layer;}
+  
+  int GetLabel(const std::vector<std::string>& lstr) {
+    int x;
+    std::string s = lstr.at(3);
+    std::istringstream issss(s);
+    issss>>x;
+    return x;
+  }
+  void AddDerGL(const std::vector<std::string>& lstr) {    
+    int label = GetLabel(lstr);
+    std::vector<std::string> lstr_c(lstr);
+    lstr_c.pop_back();
+    Add(lstr_c,m_derGL[label]);
+  }
+  void AddDerLC(const std::vector<std::string>& lstr, const int& idx) {    
+    Add(lstr,m_derLC[idx]);
+  }
+  void AddRes(const std::vector<std::string>& lstr) {
+    Add(lstr,m_res);
+  }
+  void AddResErr(const std::vector<std::string>& lstr) {
+    Add(lstr,m_reserr);
+  }
+  void Add(const std::vector<std::string>& lstr, std::vector<float>& v) {
+    float x;
+    for(size_t i=0;i<lstr.size();++i) {
+      std::string s = lstr.at(i);
+      std::istringstream issss(s);
+      issss>>x;
+      v.push_back(x);
+      
+      //}
+    }
+  }
+  
+  void GetDerLC(float * derlc,const int& axis) {        
+    for(size_t i=0;i<5;++i) {
+      derlc[i]=m_derLC[i][axis];
+    }
+  }
+
+  void GetDerGL(float * dergl,int * label,const int& axis) {        
+    int g=0;
+    for(std::map<int,std::vector<float> >::const_iterator j=m_derGL.begin();j!=m_derGL.end();++j) {
+      dergl[g] = j->second[axis];
+      label[g] = j->first;
+      ++g;
+    }
+  }
+  
+  int NGL() {
+    return (int) m_derGL.size();
+  }
+
+  float GetRes(const int& axis) {        
+    return m_res[axis];
+  }
+  float GetErr(const int& axis) {        
+    return m_reserr[axis];
+  }
+  
+  
+  void Layer(int l) { m_layer=l;}
+  
+  void print() {
+    std::cout << "AlObj: " << std::endl;
+    std::cout << "Layer: " << m_layer << "" << std::endl;
+    for(size_t i=0;i<m_res.size();++i) std::cout << " " << m_res[i];
+    std::cout << "" << std::endl;
+    for(size_t i=0;i<m_reserr.size();++i) std::cout << " " << m_reserr[i];
+    std::cout << "" << std::endl;
+    for(int j=0;j!=5;++j) {
+      std::cout << " --- LC " << j <<" --- " << std::endl;
+      for(size_t i=0;i<m_derLC[j].size();++i) std::cout << " " << m_derLC[j][i];
+      std::cout << "" << std::endl;
+    }
+    for(std::map<int,std::vector<float> >::const_iterator j=m_derGL.begin();j!=m_derGL.end();++j) {
+      std::cout << " --- GL " << j->first <<" --- " << std::endl;
+      for(size_t i=0;i<j->second.size();++i) std::cout << " " << j->second.at(i);
+      std::cout << "" << std::endl;
+    }
+  }
+  
+  
+ private:
+  int m_layer;
+  std::vector<float> m_res,m_reserr;
+  std::vector<float> m_derLC[5];  
+  std::map<int,std::vector<float> > m_derGL;  
+  //float *derLc;
+  
+  
+  
+};
+
+
+
+
+#endif

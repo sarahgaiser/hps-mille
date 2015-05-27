@@ -1,0 +1,1339 @@
+%\documentclass[aps,prl,twocolumn,showpacs,groupedaddress]{revtex4}  % for review and submission
+\documentclass{article}
+%\oddsidemargin=0.03in
+%\textwidth=6.4in
+%\textheight=9.0in
+%\topmargin=0.1in
+%\usepackage{epsfig}
+%\usepackage[square]{natbib}
+\usepackage[numbers]{natbib}
+\usepackage{amsmath}
+\usepackage{amssymb}
+%\usepackage{feynmf}
+\usepackage{graphics}
+\usepackage{subfigure}
+\usepackage{atlasphysics}
+
+\newlength{\figwidth}
+\setlength{\figwidth}{\textwidth}
+\addtolength{\figwidth}{-2.0cm}
+
+\def\R{\ensuremath{\mathrm{R}}}
+\def\slope{\ensuremath{\mathrm{slope}}}
+\def\dphi{\ensuremath{\Delta\phi}}
+\def\phione{\ensuremath{\mathrm{atan2}(x_0-x_c,y_0-y_c)}}
+\def\phitwo{\ensuremath{\mathrm{atan2}(x-x_c,y-y_c)}}
+\def\sign#1{\ensuremath{\mathrm{sign}\left(#1\right)}}
+
+\def\sinphizero{\ensuremath{\sin\left(\phi_0\right)}}
+\def\signR{\sign{\R}}
+\def\vec#1{\ensuremath{\mathrm{\bf #1}}}
+\def\qvec{\ensuremath{\mathrm{\bf q}}}
+\def\pvec{\ensuremath{\mathrm{\bf p}}}
+\def\partder#1#2{\ensuremath{\frac{\partial #1}{\partial #2}}}
+
+\begin{document}
+
+
+%
+\title{Helix Derivatives}
+\author{P.~Hansson~Adrian$^{1}$, M.~Graham$^{1}$, S. Uemura$^{1}$}
+%, M.~Graham$^{1}$}
+%\\                                                                            
+%\vskip 0.30cm                                                                 
+%\affiliation{                                                                 
+%\centerline{$^{1}$SLAC National Accelerator Laboratory}
+%\vskip 0.30cm                                                                 
+%}                                                                             
+%\centerline{$^{1}$Lule\aa Hockey, Sweden}
+       
+
+
+
+\date{\today}%December 10, 2008}
+
+%\begin{abstract}
+%Abstract.
+%\end{abstract}
+
+\maketitle
+
+
+
+\section{Introduction}
+
+This note describes the implementation of the alignment procedure for the HPS SVT. 
+Most of this follows what is described in more depth in Ref.~\cite{cms_align} and in the MillepedeII manual (ref).
+
+Updates needed:
+\begin{itemize} 
+\item Need to update the mix of nomenclature of q for track parameters and hit positions.
+\item Clean-up formulas that are not relevant
+\item improve organization in the descriptions
+\end{itemize}
+
+
+
+\section{Track Based Alignment}
+Each hit measurement, $y_i$, is assumed to be described by a (non-)linear 
+track model $f(x_i,\vec{\tau})$ which depends on a small number of parameter $\vec{\tau}$. 
+In the case of a particle track in a homogenous magnetic field these are the five track 
+parameters describing a helical track,
+\begin{equation}
+y_i = f\left( x_i,\vec{\tau} \right) + \epsilon_i.
+\end{equation}
+The coordinate $x_i$ is the coordinate of the hit $y_i$ and $\epsilon$ is the 
+uncertainty on $y_i$. The local-fit function $f$ is linearized, if needed, by expressing 
+it as a linear function of the local parameter corrections $\Delta\vec{\tau}$ at some reference 
+value $\vec{\tau}_k$,
+\begin{equation}
+f\left( x_i,\vec{\tau}_k+\Delta\vec{\tau} \right) = f\left( x_i,\vec{\tau}_k \right) +  \frac{\partial f}{\partial \mathrm{q}_1}\Delta \mathrm{q}_1 +  \frac{\partial f}{\partial \mathrm{q}_2}\Delta \mathrm{q}_2 + ...
+\end{equation}
+The local fit relies on minimizing the measured residual $z_i$ for each hit,
+\begin{equation}
+z_i = y_i-f\left( x_i,\vec{\tau}_k\right).
+\end{equation}
+By solving for $\Delta\vec{\tau}$ for each iteration $k$ and updating with 
+$\vec{\tau}_{k+1}=\vec{\tau}_k+\Delta\vec{\tau}$ convergence and optimal $\Delta\vec{\tau}$ can be obtained. 
+
+This so-called local fit is performed assuming the relative positions of the sensors providing 
+the hit measurements. Each sensor has 6 degrees of freedom, 3 translation and 3 rotations, 
+given by a vector $\vec{p}$ and the goal of track based alignment is to determine the corrections 
+$\vec{\Delta p}$ to the nominal values. These global parameters can be incorporated in the 
+residual by  
+\begin{equation}
+z_i=y_i- f\left( x_i,\vec{\tau}_k\right) = \sum_j^{\nu}{ \frac{\partial f}{\partial \mathrm{q}_j}\Delta \mathrm{q}_j } +  \sum_l{ \frac{\partial f}{\partial \mathrm{p}_l}\Delta \mathrm{p}_l }.
+\end{equation}
+where $l$ is the number of global parameters and the best local (track) parameter 
+correction $\Delta\vec{\tau}$ can be used in the global fit. 
+
+The alignment algorithm last step is to minimize these residuals w.r.t. the global parameters which 
+involves solving a system of linear equations using the MillepedeII software program. 
+
+In order to run the minimization we have to provide three inputs to MillepedeII:
+\begin{itemize}
+\item The track residuals \vec{z},
+\item the local track derivatives $\partder{ f } {\vec{\tau}}$,
+\item and the global derivatives $\partder{f}{\vec{p}}$.
+\end{itemize}
+This note describes the calculation of these inputs. 
+
+Section~\ref{sec:helix} introduces some useful nomenclature and definitions used in the later 
+sections. The calculation of all the local track derivatives are described in Sec.~\ref{sec:localders}. 
+Section~\label{sec:param} describes the way we setup the alignment parameterization w.r.t. the 
+global parameters and the actual derivatives are calculated in Sec.~\ref{sec:globalders}.
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{Coordinates, Frames and Helical Tracks}
+\label{sec:helix}
+
+In the following there are two coordinate systems that are used. The first one is what we call 
+the {\it local (sensor) frame} which is a coordinate system based on the sensor plane itself where
+the three axis $u,v,w$ are typically defined with the $u$ direction being the well measured 
+coordinate on the sensor and $v$ the less measured coordinate and finally $w$ orthogonal and 
+in this case normal to the sensor plane. 
+
+The other coordinate system is what we call the {\it global (tracking) frame} which is the coordinate 
+system in which our tracks are fitted. This is defined with the three axis $x,y,z$ where the magnetic 
+filed is parallel to the $z$ axis.
+Charged particles thus follow helical trajectories with $y$ as the bend-plane and $x$, in our case, coincides with the the beam line direction. 
+
+\subsubsection*{Equations for trajectories in the XY plane}
+Point on helix $(x,y)$ satisfies,
+\begin{equation}
+\R^2 =  \left(x-x_c\right)^2 +  \left(y-y_c\right)^2 \label{eq:circle}
+\end{equation}
+and the coordinate of the centre of the circle can be written,
+\begin{eqnarray}
+x_c &=& x + \R\sin\phi \label{eq:xc}\\
+y_c &=& y - \R\cos\phi \label{eq:yc}.
+\end{eqnarray}
+
+\subsubsection*{Equation for trajectory in XZ plane}
+\begin{equation}
+z = z_0 + \mathrm{s}\times\slope \label{eq:z}
+\end{equation}
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+\section{Alignment Parameterization}
+\label{sec:param}
+\begin{verbatim}
+Note the change of nomenclature for q compared to previous section.
+\end{verbatim}
+A hit measurement vector \vec{q} can be represented as,
+\begin{equation}
+\vec{r} = \vec{R^T}\vec{q} + \vec{r_0},
+\end{equation}
+where \vec{R} is a rotation matrix and \vec{r_0} is the position of the sensor. The task of the 
+alignment procedure is to provide correction to position and rotation of the sensor, \vec{q_0} and \vec{R}, respectively,
+\begin{equation}
+\vec{r} = \vec{R^T}\vec{\Delta R}\left( \vec{q} + \Delta \vec{q} \right) + \vec{r_0}.
+\end{equation}
+
+
+The alignment parameters are the components of $\Delta \vec{q}$ and $\Delta \vec{R}$ and are 
+often expressed in the local sensor coordinates as they are related to the individual sensor. As noted in the previous section, the  
+measured hit position components are $\vec{q}=\left(u,v,w\right)$, where the precisely measured 
+coordinate on the sensor is separated from the less well-known coordinate. In a strip sensor $u$ 
+is typically the precisely measured coordinate and $v$ is the un-measured coordinate. $w$ is the direction normal to the sensor plane. For alignment typically the $\Delta w$ is ignored as all hits happen at the sensor plane as will be evident later. The rotation correction matrix $\Delta \vec{R}$ are reduced to three angles around the $u$-, $v$- and $w$-axis and are denoted as $\alpha$, $\beta$ and $\gamma$ (around the center of the sensors and thus do not induce a translation). Each sensor thus has 6 alignment parameters and following the notation in Ref.~\ref{cms_align} it can be represented by a vector \vec{a},
+\[
+ \vec{a} = 
+ \begin{pmatrix}
+ \Delta u \\
+ \Delta v \\
+ \Delta w \\
+ \alpha \\
+\beta \\
+\gamma
+ \end{pmatrix}
+\]
+
+In order to solve the minimization problem we need to calculate the derivatives of the residuals 
+w.r.t. the local and global parameters. The residual \vec{z} is,
+\[
+\vec{z} =  \vec{q}_a - \vec{q}_p = 
+\begin{pmatrix}
+u_m \\
+v_m \\
+w_m 
+ \end{pmatrix}
+ - 
+\begin{pmatrix}
+u_p \\
+v_p \\
+w_p 
+ \end{pmatrix}
+\]
+where $\vec{q}_a$ is the alignment corrected hit,
+\begin{equation}
+\vec{q_a} = \vec{\Delta R}  \vec{q}_h + \Delta \vec{q},
+\end{equation}
+where \vec{q_h} is the measured hit position. For the minimization of the square of residuals 
+the  global derivatives,
+\begin{equation}
+\partder{\vec{z}}{\vec{a}}  =  \partder{\vec{q}_a}{\vec{a}} - \partder{\vec{q}_p}{\vec{a}}. 
+\label{eq:zdergl}
+\end{equation}
+needs to be calculated. 
+
+
+Starting with $\partder{\vec{q}_a}{\vec{a}}$ the partial derivatives w.r.t. to a translation $\Delta u$ is,
+\[
+\partder{\vec{q}_a}{\Delta u}  =
+\partder{}{\Delta u} \left ( \vec{\Delta R}\vec{q}_h + \Delta \vec{q}  \right ) = 
+\partder{}{\Delta u} 
+\begin{pmatrix}
+\Delta u \\
+\Delta v \\
+\Delta w
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 \\
+0 \\
+0
+\end{pmatrix}
+\]
+ and similarly for the other translations in $v$ and $w$,
+ \[
+ \partder{\vec{q}_a}{\Delta v} =
+\begin{pmatrix}
+0 \\
+1 \\
+0
+\end{pmatrix}
+, \partder{\vec{q}_a}{\Delta w} =
+\begin{pmatrix}
+0 \\
+0 \\
+1
+\end{pmatrix} 
+\]
+Next we calculate the derivatives w.r.t. the rotations i.e. $\partder{\vec{q}_a}{\alpha},\partder{\vec{q}_a}{\beta},\partder{\vec{q}_a}{\gamma}$ . By observing that
+\begin{eqnarray}
+\partder{\vec{q}_a}{\alpha} = \partder{}{\alpha} \left(  \vec{\Delta R}\vec{q}_h + \Delta \vec{q} \right) =  \partder{}{\alpha} \left(  \vec{\Delta R}\vec{q}_h \right) \\
+\partder{\vec{q}_a}{\beta} = \partder{}{\beta} \left(  \vec{\Delta R}\vec{q}_h + \Delta \vec{q} \right) =  \partder{}{\beta} \left(  \vec{\Delta R}\vec{q}_h \right) \\
+\partder{\vec{q}_a}{\gamma} = \partder{}{\gamma} \left(  \vec{\Delta R}\vec{q}_h + \Delta \vec{q} \right) =  \partder{}{\gamma} \left(  \vec{\Delta R}\vec{q}_h \right)
+\end{eqnarray}
+where the rotation matrix is given by  
+\begin{equation}
+\vec{\Delta R} = \vec{R}_\gamma \times \vec{R}_\beta \times  \vec{R}_\alpha \nonumber
+\end{equation}
+and each rotation is described by a $3x3$ rotation matrix:
+\[
+ \vec{R}_\alpha = 
+\begin{pmatrix}
+ 1 & 0 & 0 \\
+ 0 & \cos \alpha & \sin \alpha \\
+ 0 & -\sin \alpha & \cos \alpha
+ \end{pmatrix}
+ ,  \vec{R}_\beta = 
+\begin{pmatrix}
+ \cos \beta & 0 & -\sin \beta \\
+ 0 & 1 & 0 \\
+ \sin \beta & 0 & \cos \beta
+ \end{pmatrix}
+ ,  \vec{R}_\gamma = 
+\begin{pmatrix}
+\cos \gamma & \sin \gamma & 0 \\
+-\sin \gamma & \cos \gamma & 0 \\
+0 & 0 & 1
+ \end{pmatrix}
+\]
+Note that the sign of the rotation matrix might be different compared to other conventions.
+All angles are assumed to be small and after linearization the derivatives become,
+\[
+\partder{\vec{\Delta R}}{\alpha} = 
+\begin{pmatrix}
+ 0 & 0 & 0 \\
+ 0 & 0 & 1 \\
+ 0 & -1 & 0
+ \end{pmatrix}
+ ,  \partder{\vec{\Delta R}}{\beta} = 
+\begin{pmatrix}
+ 0 & 0 & -1 \\
+ 0 & 0 & 0 \\
+ 1 & 0 & 0
+ \end{pmatrix}
+ ,  \partder{\vec{ \Delta R}}{\gamma} = 
+\begin{pmatrix}
+0 & 1 & 0 \\
+-1 & 0 & 0 \\
+0 & 0 & 0
+ \end{pmatrix}
+ \label{eq:dDeltaR}
+\]
+These can be written more compactly, and evaluated at the measured position $\vec{q}_h=\vec{q}_m=\left ( u_m, v_m, w_m \right)$ as,
+\[
+\partder{\vec{q}_a}{\vec{a}} = 
+\begin{pmatrix}
+\vec{1} & \partder{\Delta R}{\alpha} \vec{q}_h & \partder{\Delta R}{\beta} \vec{q}_h & \partder{\Delta R}{\gamma} \vec{q}_h 
+\end{pmatrix} 
+= 
+\begin{pmatrix}
+1 & 0 & 0 & 0       & -w_m & v_m  \\
+0 & 1 & 0 & w_m & 0        & -u_m \\
+0 & 0 & 1 & -v_m  & u_m  & 0        
+\end{pmatrix}
+\]
+As mentioned before $w_m=0$ by construction (the hit $\vec{q}_h$ is on the sensor surface) and the un-measured direction $v$ can be ignored by it kept here for consistency,
+\[
+\partder{\vec{q}_a}{\vec{a}} = 
+\begin{pmatrix}
+1 & 0 & 0 & 0       & 0 & v_m \\
+0 & 1 & 0 & 0 & 0        & -u_m \\
+0 & 0 & 1 & -v_m  & u_m  & 0        
+\end{pmatrix}
+\]
+
+The global derivative $\partder{\vec{q}_p}{\vec{a}}$ measures the effect 
+of the predicted track position on the surface of the sensor. Note that a shift of the sensor in the 
+$u,v$ plane is equivalent to a shift of the measured hit position $\vec{q}_h$ and the only direction 
+where the track propagation needs to be taken into account is the $w$ direction. Using this we can write (this is unclear!!),
+\begin{equation}
+\partder{\vec{q}_p}{\vec{a}} = \partder{\vec{q}_p}{\vec{q}_a} \partder{\vec{q}_a}{\vec{a}}
+\end{equation}
+where  $\partder{\vec{q}_p}{\vec{q}_a}$ is
+\[
+\partder{\vec{q}_p}{u_a} = 0, 
+\partder{\vec{q}_p}{v_a} = 0, 
+\partder{\vec{q}_p}{w_a} = \partder{\vec{q}_p}{w_h} = 
+\begin{pmatrix}
+\partder{u_p}{w_h} \\
+\partder{v_p}{w_h} \\
+\partder{w_p}{w_h} 
+\end{pmatrix}
+\]
+since a shift in the $u,v$ plane is equivalent to a shift in the hit position. Using this and 
+$\partder{\vec{q}_a}{\vec{a}}$ calculated earlier,
+\[
+ \partder{\vec{q}_p}{\vec{q}_a} \partder{\vec{q}_a}{\vec{a}} = 
+ \begin{pmatrix}
+0 & 0 & \partder{u_p}{w_h} \\
+0 & 0 & \partder{v_p}{w_h} \\
+0 & 0 & \partder{w_p}{w_h} \\
+ \end{pmatrix}
+ \begin{pmatrix}
+1 & 0 & 0 & 0       & 0 & v_m \\
+0 & 1 & 0 & 0 & 0        & -u_m \\
+0 & 0 & 1 & -v_m  & u_m  & 0        
+\end{pmatrix} 
+=
+ \]
+\[
+ \begin{pmatrix}
+0 & 0 & \partder{u_p}{w_h} & -v_m \partder{u_p}{w_h}  & u_m \partder{u_p}{w_h} & 0 \\
+0 & 0 & \partder{v_p}{w_h} & -v_m \partder{v_p}{w_h}   & u_m \partder{v_p}{w_h} & 0 \\
+0 & 0 & \partder{w_p}{w_h} & -v_m \partder{w_p}{w_h}   & u_m \partder{w_p}{w_h} & 0
+ \end{pmatrix}
+ \]
+ 
+Now we have all the ingredients to calculate Eq.~\ref{eq:zdergl}:
+\[
+ \partder{\vec{z}}{\vec{a}}  =  \partder{\vec{q}_a}{\vec{a}} - \partder{\vec{q}_p}{\vec{a}} = 
+\partder{\vec{q}_a}{\vec{a}} -  \partder{\vec{q}_p}{\vec{q}_a} \partder{\vec{q}_a}{\vec{a}} =
+\]
+\[
+\begin{pmatrix}
+1 & 0 & 0 & 0       & 0 & v_m \\
+0 & 1 & 0 & 0 & 0        & -u_m \\
+0 & 0 & 1 & -v_m  & u_m  & 0        
+\end{pmatrix}
+-
+ \begin{pmatrix}
+ 0 & 0 & \partder{u_p}{w_h} & -v_m \partder{u_p}{w_h}  & u_m \partder{u_p}{w_h} & 0 \\
+0 & 0 & \partder{v_p}{w_h} & -v_m \partder{v_p}{w_h}   & u_m \partder{v_p}{w_h} & 0 \\
+0 & 0 & \partder{w_p}{w_h} & -v_m \partder{w_p}{w_h}   & u_m \partder{w_p}{w_h} & 0
+\end{pmatrix}
+ =
+\]
+\[
+\begin{pmatrix}
+1 & 0 & -\partder{u_p}{w_h} & v_m \partder{u_p}{w_h} & -u_m \partder{u_p}{w_h} & v_m \\
+0 & 1 & - \partder{v_p}{w_h} & v_m \partder{v_p}{w_h} & -u_m \partder{v_p}{w_h} & -u_m \\
+0 & 0 & 1-\partder{w_p}{w_h} & v_m \partder{w_p}{w_h} -v_m & u_m-u_m \partder{w_p}{w_h} & 0 
+\end{pmatrix}
+\]
+Since $w_m=0$ we can ignore the third component which means that we can 
+write the global residual derivative as,
+\[
+\partder{\vec{z}}{\vec{a}} = 
+\begin{pmatrix}
+1 & 0 & -\partder{u_p}{w_h} & v_m \partder{u_p}{w_h} & -u_m \partder{u_p}{w_h} & v_m \\
+0 & 1 & - \partder{v_p}{w_h} & v_m \partder{v_p}{w_h} & -u_m \partder{v_p}{w_h} & -u_m \\
+0 & 0 & 0 & 0 & 0 & 0
+\end{pmatrix}
+\]
+In the case of a strip sensor only the well-measured direction is important and thus only 
+the first row is important.
+
+
+
+The calculation of the global derivatives $\partder{q}{\vec{a}}$ is detailed in Sec.~\ref{sec:globalders}.  
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{Global Derivatives}
+\label{sec:globalders}
+
+The parameterization that is layed out in Sec.~\ref{sec:param} provide information on what 
+global derivatives are needed,
+\[
+\partder{\vec{z}}{\vec{a}} = 
+\begin{pmatrix}
+1 & 0 & -\partder{u_p}{w_h} & v_m \partder{u_p}{w_h} & -u_m \partder{u_p}{w_h} & v_m \\
+0 & 1 & - \partder{v_p}{w_h} & v_m \partder{v_p}{w_h} & -u_m \partder{v_p}{w_h} & -u_m \\
+0 & 0 & 0 & 0 & 0 & 0
+\end{pmatrix}
+\]
+where only the first row is important for strip sensors. In the global frame, the derivatives involving 
+e.g. $u$ will be affected by translations and rotations around the global coordinate axis $x,y,z$. 
+Our global derivatives are typically calculated in the global frame since that is where track fitting occurs. The next section shows how to determine the global derivatives in the global frame.
+
+\subsection{Global Derivatives in the Local Frame}
+
+Later in this section we show how to derive the derivatives of the predicted hit position $\vec{x}_p$ 
+in the global frame. This is a natural calculation and is also where our alignment parameters 
+come together to form a common detector geometry. However, previously we showed what global derivatives we need to calculate in the local sensor frame $\partder{\vec{z}}{\vec{a}}$. 
+
+In order to connect 
+these two calculations we need to understand how the change of an alignment parameter in the 
+global frame affect the alignment parameter in the local sensor frame that is used in the Millepede minimization. 
+
+Using integration by parts we have
+\begin{equation}
+\partder{\vec{z}}{\vec{b}} =  \partder{\vec{z}}{\vec{a}} \partder{\vec{a}}{\vec{b}} \nonumber
+\end{equation}
+where 
+\[
+\vec{a}= 
+\begin{pmatrix}
+\Delta u \\
+\Delta v \\
+\Delta w \\
+\alpha \\
+\beta \\
+\gamma 
+\end{pmatrix},
+\vec{b}= 
+\begin{pmatrix}
+\Delta x \\
+\Delta y \\
+\Delta z \\
+a \\
+b \\
+c 
+\end{pmatrix}
+\]
+are the alignment parameters in the local (\vec{a}) and global (\vec{b}) frame. The matrix 
+$\partder{\vec{a}}{\vec{b}}$ is defined as
+\[
+\partder{\vec{a}}{\vec{b}}= 
+\begin{pmatrix}
+\partder{u}{x} & \partder{u}{y} & \partder{u}{z} & \partder{u}{a} & \partder{u}{b} & \partder{u}{c}  \\ 
+\partder{v}{x} & \partder{v}{y} & \partder{v}{z} & \partder{v}{a} & \partder{v}{b} & \partder{v}{c}  \\ 
+\partder{w}{x} & \partder{w}{y} & \partder{w}{z} & \partder{w}{a} & \partder{w}{b} & \partder{w}{c}  \\ 
+\partder{\alpha}{x} & \partder{\alpha}{y} & \partder{\alpha}{z} & \partder{\alpha}{a} & \partder{\alpha}{b} & \partder{\alpha}{c}  \\ 
+\partder{\beta}{x} & \partder{\beta}{y} & \partder{\beta}{z} & \partder{\beta}{a} & \partder{\beta}{b} & \partder{\beta}{c}  \\ 
+\partder{\gamma}{x} & \partder{\gamma}{y} & \partder{\gamma}{z} & \partder{\gamma}{a} & \partder{\gamma}{b} & \partder{\gamma}{c} 
+\end{pmatrix}
+\]
+where $\Delta x=x$ and $\Delta u=u$ (similarly in the other directions) are equivalent in the derivatives. 
+
+To calculate the matrix elements we start by expressing how a small translation  
+$\vec{\Delta x} (= \left ( \Delta x, \Delta y, \Delta z \right)$)  and rotation $\vec{\Delta R}'$  in the global 
+frame affects the local translation $\vec{\Delta q} = \left ( \Delta u, \Delta v, \Delta w \right)$ 
+on a point in the global frame $\vec{x}=\left( x,y,z \right)$
+\begin{equation}
+\vec{\Delta q} = \vec{T} \vec{\Delta x} + \vec{T}\left ( \vec{\vec{\Delta R}'} \vec{x}  - \vec{x}  \right) =  \vec{T} \vec{\Delta x} + \vec{T}\left ( \vec{\Delta R'}   - \vec{I}  \right)\vec{x}
+\label{eq:dqdx}
+\end{equation}
+where $\vec{T}$ is the rotation matrix from the global to local frame. The rotation matrix $\vec{\Delta R'}$ is identical to $\vec{\Delta R}$  derived for the local frame earlier, only that the rotation axes are around $x,y,z$ instead of $u,v,w$.
+
+The other thing we need is to express the local sensor rotations $\vec{q}=\left(\alpha, \beta, \gamma \right)$ caused by a small rotation $\vec{\Delta R}'=\left(a,b,c\right)$ on a point $\vec{x}=\left(x,y,z\right)$ around the global axes. Using $x = \vec{T}^{-1}\vec{q}$, 
+\begin{eqnarray}
+\vec{\Delta R'} \vec{x} &=& \vec{T}^{-1} \vec{\Delta R} \vec{q} \nonumber \\
+\vec{\Delta R'} \vec{x} &=& \vec{\Delta R'} \vec{T}^{-1} \vec{q}  =  \vec{T}^{-1} \vec{\Delta R} \vec{q} \nonumber \\
+\vec{T} \vec{\Delta R'} \vec{T}^{-1} \vec{q}  &=&  \vec{\Delta R} \vec{q} \nonumber \\
+\vec{\Delta R} &=& \vec{T} \vec{\Delta R'} \vec{T}^{-1} 
+\label{eq:drdr}
+\end{eqnarray}
+ 
+ 
+ 
+ 
+The calculation of the elements of $\partder{\vec{a}}{\vec{b}}$ is split up into the 4 $3\times3$ quadrants and discussed below. 
+ 
+ \subsubsection*{Upper left $3\times3$}
+ 
+ Using Eq.~\ref{eq:dqdx} we can calculate the upper left $3\times3$ part of the \partder{\vec{a}}{\vec{b}} 
+ \[
+\partder{\vec{q}}{x} = \partder{}{x} \vec{T} \vec{\Delta x}  =  \vec{T}  
+\begin{pmatrix}
+1 \\
+0 \\
+0 \\
+\end{pmatrix},
+\partder{\vec{q}}{y} =  \vec{T}  
+\begin{pmatrix}
+0 \\
+1 \\
+0 \\
+\end{pmatrix},
+\partder{\vec{q}}{z} =  \vec{T}  
+\begin{pmatrix}
+0 \\
+0 \\
+1 \\
+\end{pmatrix}
+\]
+
+\subsubsection*{Lower right $3\times3$}
+This part of the \partder{\vec{a}}{\vec{b}} is calculated from \label{eq:drdr}
+\[
+\partder{\vec{\Delta R}}{\left(a,b,c\right)} =  \partder{}{\left(a,b,c\right)} \left (  \vec{T} \vec{\Delta R'} \vec{T}^{-1} \right )
+\]
+Expressing $\vec{\Delta R'}$ as a product of Euler matrices and using $\partder{\vec{\Delta R}'}{a,b,c}$ derived in the previous section the right hand side is given by, 
+\[
+ \partder{}{a} \left( \vec{T} \vec{\Delta R'}  \vec{T}^{-1}  \right) =  \partder{}{a} \left ( \vec{T} \left( R_g( c)  R_b(b) R_a(a)    \right) \vec{T}^{-1} \right ) = \vec{T} \partder{R_a(a)}{a} \vec{T}^{-1} = \vec{T} 
+ \begin{pmatrix}
+ 0 & 0 & 0 \\
+ 0 & 0 & 1 \\
+ 0 & -1 & 0  
+ \end{pmatrix}
+ \vec{T}^{-1} 
+\]
+\[
+ \partder{}{b} \left( \vec{T} \vec{\Delta R'}  \vec{T}^{-1} \right) =  \partder{}{b} \left ( \vec{T} \left( R_g( c)  R_b(b) R_a(b)    \right) \vec{T}^{-1} \right ) = \vec{T} \partder{R_b(b)}{b} \vec{T}^{-1} = \vec{T} 
+ \begin{pmatrix}
+ 0 & 0 & -1 \\
+ 0 & 0 & 0 \\
+ 1 & 0 & 0  
+ \end{pmatrix}
+ \vec{T}^{-1} \\
+\]
+\[
+ \partder{}{c} \left( \vec{T} \vec{\Delta R'} \vec{T}^{-1}  \right) =  \partder{}{c} \left ( \vec{T} \left( R_g( c)  R_b(b) R_a(b)    \right) \vec{T}^{-1} \right ) = \vec{T} \partder{R_g( c)}{c} \vec{T}^{-1} = \vec{T} 
+ \begin{pmatrix}
+ 0 & 1 & 0 \\
+ -1 & 0 & 0 \\
+ 0 & 0 & 0  
+ \end{pmatrix}
+ \vec{T}^{-1} \\
+\]
+which can be written out more explicitly by also expressing $\vec{T}$ as a product of Euler angles 
+$\vec{T} = R_g(k) R_b(j) R_a(i)$ (remember that $\vec{T}$ is the rotation matrix that takes a vector in the global frame to the sensor frame and thus $i,j,k$ are the rotation angles),
+\[
+ \partder{}{a} \left( \vec{T} \vec{\Delta R'} \vec{T}^{-1}   \right) = \vec{T} \partder{R_a(a)}{a} \vec{T}^{-1} =
+\begin{pmatrix}
+0 & s_j & c_j s_k \\ 
+-s_j& 0& c_j c_k \\
+-c_j s_k & -c_j c_k & 0
+\end{pmatrix}
+\]
+\[
+ \partder{}{b} \left( \vec{T} \vec{\Delta R'} \vec{T}^{-1}   \right) = \vec{T} \partder{R_b(b)}{b} \vec{T}^{-1} =
+\begin{pmatrix}
+0 & -c_j  s_i & -c_i  c_k  + s_i  s_j  s_k \\
+c_j  s_i & 0& c_k  s_i  s_j  + c_i  s_k \\
+c_i  c_k  - s_i  s_j  s_k & -c_k  s_i  s_j  - c_i  s_k & 0
+\end{pmatrix}
+\]
+\[
+ \partder{}{c} \left( \vec{T} \vec{\Delta R'} \vec{T}^{-1}   \right) = \vec{T} \partder{R_g(c)}{c} \vec{T}^{-1} =
+\begin{pmatrix}
+0 &  c_i  c_j  &  -c_k  s_i  - c_i  s_j  s_k  \\ 
+-c_i  c_j  &  0 &  -c_i  c_k  s_j  + s_i  s_k  \\
+c_k  s_i  +  c_i  s_j  s_k  &  c_i  c_k  s_j  - s_i  s_k  &  0
+\end{pmatrix}
+\]
+
+
+
+
+
+The left hand side can be written as
+\begin{eqnarray}
+\partder{}{a} \vec{\Delta R} = \partder{}{a} \left( R_g(\gamma) R_b(\beta) R_a(\alpha)    \right) \partder{ R_g(\gamma) }{\gamma} \partder{\gamma}{a} + 
+\partder{ R_b(\beta) }{\beta} \partder{\beta}{a} + 
+\partder{ R_a(\alpha) }{\alpha} \partder{\alpha}{a}  \nonumber \\
+\partder{}{b} \vec{\Delta R} = \partder{}{b} \left( R_g(\gamma) R_b(\beta) R_a(\alpha)    \right) \partder{ R_g(\gamma) }{\gamma} \partder{\gamma}{b} + 
+\partder{ R_b(\beta) }{\beta} \partder{\beta}{b} + 
+\partder{ R_a(\alpha) }{\alpha} \partder{\alpha}{b}  \nonumber \\
+\partder{}{c} \vec{\Delta R} = \partder{}{c} \left( R_g(\gamma) R_b(\beta) R_a(\alpha)    \right) \partder{ R_g(\gamma) }{\gamma} \partder{\gamma}{c} + 
+\partder{ R_b(\beta) }{\beta} \partder{\beta}{c} + 
+\partder{ R_a(\alpha) }{\alpha} \partder{\alpha}{c}  
+\end{eqnarray}
+and using the  $\partder{\vec{\Delta R}'}{a,b,c}$ derivatives,
+\[
+\partder{}{a} \vec{\Delta R} = 
+\partder{\gamma}{a}
+\begin{pmatrix}
+ 0 & 1 & 0 \\
+ -1 & 0 & 0 \\
+ 0 & 0 & 0  
+ \end{pmatrix}
+ + \partder{\beta}{a}
+\begin{pmatrix}
+ 0 & 0 & -1 \\
+ 0 & 0 & 0 \\
+ 1 & 0 & 0  
+ \end{pmatrix}
+ + \partder{\alpha}{a}
+\begin{pmatrix}
+ 0 & 0 & 0 \\
+ 0 & 0 & 1 \\
+ 0 & -1 & 0  
+ \end{pmatrix}
+\]
+\[
+\partder{}{b} \vec{\Delta R} = 
+\partder{\gamma}{b}
+\begin{pmatrix}
+ 0 & 1 & 0 \\
+ -1 & 0 & 0 \\
+ 0 & 0 & 0  
+ \end{pmatrix}
+ + \partder{\beta}{b}
+\begin{pmatrix}
+ 0 & 0 & -1 \\
+ 0 & 0 & 0 \\
+ 1 & 0 & 0  
+ \end{pmatrix}
+ + \partder{\alpha}{b}
+\begin{pmatrix}
+ 0 & 0 & 0 \\
+ 0 & 0 & 1 \\
+ 0 & -1 & 0  
+ \end{pmatrix}
+\]
+\[
+\partder{}{c} \vec{\Delta R} = 
+\partder{\gamma}{c}
+\begin{pmatrix}
+ 0 & 1 & 0 \\
+ -1 & 0 & 0 \\
+ 0 & 0 & 0  
+ \end{pmatrix}
+ + \partder{\beta}{c}
+\begin{pmatrix}
+ 0 & 0 & -1 \\
+ 0 & 0 & 0 \\
+ 1 & 0 & 0  
+ \end{pmatrix}
+ + \partder{\alpha}{c}
+\begin{pmatrix}
+ 0 & 0 & 0 \\
+ 0 & 0 & 1 \\
+ 0 & -1 & 0  
+ \end{pmatrix}
+\]
+and simplifying,
+\[
+\partder{}{a} \vec{\Delta R} = 
+\begin{pmatrix}
+ 0 & \partder{\gamma}{a} & 0 \\
+ -\partder{\gamma}{a} & 0 & 0 \\
+ 0 & 0 & 0  
+ \end{pmatrix}
+ + 
+\begin{pmatrix}
+ 0 & 0 & -\partder{\beta}{a}\\
+ 0 & 0 & 0 \\
+ \partder{\beta}{a} & 0 & 0  
+ \end{pmatrix}
+ + 
+\begin{pmatrix}
+ 0 & 0 & 0 \\
+ 0 & 0 & \partder{\alpha}{a} \\
+ 0 & -\partder{\alpha}{a} & 0  
+ \end{pmatrix}
+=
+\begin{pmatrix}
+ 0 & \partder{\gamma}{a} & -\partder{\beta}{a} \\
+ -\partder{\gamma}{a} & 0 & \partder{\alpha}{a} \\
+ \partder{\beta}{a} & -\partder{\alpha}{a} & 0  
+ \end{pmatrix}
+\]
+\[
+\partder{}{b} \vec{\Delta R} = 
+\begin{pmatrix}
+ 0 & \partder{\gamma}{b} & 0 \\
+ -\partder{\gamma}{b} & 0 & 0 \\
+ 0 & 0 & 0  
+ \end{pmatrix}
+ + 
+\begin{pmatrix}
+ 0 & 0 & -\partder{\beta}{b}\\
+ 0 & 0 & 0 \\
+ \partder{\beta}{b} & 0 & 0  
+ \end{pmatrix}
+ + 
+\begin{pmatrix}
+ 0 & 0 & 0 \\
+ 0 & 0 & \partder{\alpha}{b} \\
+ 0 & -\partder{\alpha}{b} & 0  
+ \end{pmatrix}
+=
+\begin{pmatrix}
+ 0 & \partder{\gamma}{b} & -\partder{\beta}{b} \\
+ -\partder{\gamma}{b} & 0 & \partder{\alpha}{b} \\
+ \partder{\beta}{b} & -\partder{\alpha}{b} & 0  
+ \end{pmatrix}
+\]
+\[
+\partder{}{c} \vec{\Delta R} = 
+\begin{pmatrix}
+ 0 & \partder{\gamma}{c} & 0 \\
+ -\partder{\gamma}{c} & 0 & 0 \\
+ 0 & 0 & 0  
+ \end{pmatrix}
+ + 
+\begin{pmatrix}
+ 0 & 0 & -\partder{\beta}{c}\\
+ 0 & 0 & 0 \\
+ \partder{\beta}{c} & 0 & 0  
+ \end{pmatrix}
+ + 
+\begin{pmatrix}
+ 0 & 0 & 0 \\
+ 0 & 0 & \partder{\alpha}{c} \\
+ 0 & -\partder{\alpha}{c} & 0  
+ \end{pmatrix}
+=
+\begin{pmatrix}
+ 0 & \partder{\gamma}{c} & -\partder{\beta}{c} \\
+ -\partder{\gamma}{c} & 0 & \partder{\alpha}{c} \\
+ \partder{\beta}{c} & -\partder{\alpha}{c} & 0  
+ \end{pmatrix}
+\]
+and finally, equating left- and right-hand side,
+\[
+\partder{}{a} \vec{\Delta R} = 
+\begin{pmatrix}
+ 0 & \partder{\gamma}{a} & -\partder{\beta}{a} \\
+ -\partder{\gamma}{a} & 0 & \partder{\alpha}{a} \\
+ \partder{\beta}{a} & -\partder{\alpha}{a} & 0  
+ \end{pmatrix}
+ = 
+\begin{pmatrix}
+0 & s_j & c_j s_k \\ 
+-s_j& 0& c_j c_k \\
+-c_j s_k & -c_j c_k & 0
+\end{pmatrix}
+\]
+\[
+\partder{}{b} \vec{\Delta R} = 
+\begin{pmatrix}
+ 0 & \partder{\gamma}{b} & -\partder{\beta}{b} \\
+ -\partder{\gamma}{b} & 0 & \partder{\alpha}{b} \\
+ \partder{\beta}{b} & -\partder{\alpha}{b} & 0  
+ \end{pmatrix}
+=
+\begin{pmatrix}
+0 & -c_j  s_i & -c_i  c_k  + s_i  s_j  s_k \\
+c_j  s_i & 0& c_k  s_i  s_j  + c_i  s_k \\
+c_i  c_k  - s_i  s_j  s_k & -c_k  s_i  s_j  - c_i  s_k & 0
+\end{pmatrix}
+\]
+\[
+\partder{}{c} \vec{\Delta R} = 
+\begin{pmatrix}
+ 0 & \partder{\gamma}{c} & -\partder{\beta}{c} \\
+ -\partder{\gamma}{c} & 0 & \partder{\alpha}{c} \\
+ \partder{\beta}{c} & -\partder{\alpha}{c} & 0  
+ \end{pmatrix}
+=
+\begin{pmatrix}
+0 &  c_i  c_j  &  -c_k  s_i  - c_i  s_j  s_k  \\ 
+-c_i  c_j  &  0 &  -c_i  c_k  s_j  + s_i  s_k  \\
+c_k  s_i  +  c_i  s_j  s_k  &  c_i  c_k  s_j  - s_i  s_k  &  0
+\end{pmatrix}
+\]
+which we can use to identify the derivatives $\partder{(\alpha,\beta,\gamma)}{(a,b,c)}$,
+\begin{eqnarray}
+\partder{\alpha}{a} &=& c_j c_k,
+\partder{\alpha}{b} = c_k s_i s_j + c_i s_k,
+\partder{\alpha}{c} = -c_i c_k s_j + s_i s_k\\
+\partder{\beta}{a} &=& -c_j s_k, 
+\partder{\beta}{b} = c_i c_k - s_i s_j s_k,
+\partder{\beta}{c} = c_k  s_i + c_i s_j s_k \\
+\partder{\gamma}{a} &=& s_j,
+\partder{\gamma}{b} = -c_j s_i, 
+\partder{\gamma}{c} = c_i c_j 
+\end{eqnarray}
+This can be identified simply as \vec{T},
+\[
+\partder{\vec{\Delta R}}{(a,b,c)}=
+\partder{(\alpha,\beta,\gamma)}{(a,b,c)}=
+\begin{pmatrix}
+c_j  c_k  &    c_k  s_i  s_j  + c_i  s_k  &  -c_i  c_k  s_j  + s_i  s_k  \\  
+   -c_j  s_k  &  c_i  c_k  - s_i  s_j  s_k  &  c_k  s_i  + c_i  s_j  s_k  \\
+  s_j  &  -c_j  s_i  &    c_i  c_j 
+\end{pmatrix}
+=\vec{T} 
+\]
+This can be understood by the following: 
+a small rotation correction $(a,b,c)$ to a vector in the global frame induces a 
+small correction rotation in the local frame. The rate of that induced change, 
+i.e. the derivative, must be proportional to the rotation matrix \vec{T}. If not, 
+a rotation in the global frame would deform an object in the local frame as 
+not all points on the object would transform according to the rotation matrix 
+\vec{T}. 
+
+\begin{verbatim} Need a more intuitive explanation \end{verbatim}
+
+
+
+
+
+
+\subsubsection*{Upper right $3\times3$} 
+\begin {equation}
+\partder{\vec{\Delta q}}{\left(a,b,c\right)} =  
+\partder{}{\left(a,b,c\right)} \left (  \vec{T} \vec{\Delta x} + \vec{T}\left ( \vec{\Delta R'}  - \vec{I}  \right)\vec{x} \right) =
+\partder{}{\left(a,b,c\right)} \left ( \vec{T}\left ( \vec{\Delta R'}  - \vec{I}  \right) \vec{x} \right) 
+\end{equation}
+where the assumption is that $\partder{\vec{\Delta x}}{a,b,c} \approx 0$. The derivatives 
+$\partder{\vec{\Delta R'}}{a,b,c}$ are given in Sec.~\ref{sec:param}.   
+
+
+\subsubsection*{Lower left $3\times3$} 
+Lower left quadrant is trivial as it comes down to the effect of a translation on the rotation which is zero,
+\begin {equation}
+\partder{\vec{\Delta R}}{\left(x,y,z\right)} =  
+\partder{}{\left(x,y,z\right)} \left (  \vec{T} \vec{\Delta R'} \vec{T}^{-1} \right ) = \vec{0}
+\end{equation}
+
+
+\subsubsection*{Putting the quadrants together}
+The above calculation of  $\partder{\vec{a}}{\vec{b}}$ is then used to finally calculate 
+
+
+\[
+\partder{\vec{z}}{\vec{b}}= 
+\partder{\vec{z}}{\vec{a}}  \partder{\vec{a}}{\vec{b}}= 
+\]
+\[
+\begin{pmatrix}
+1 & 0 & -\partder{u_p}{w_h} & v_m \partder{u_p}{w_h} & -u_m \partder{u_p}{w_h} & v_m \\
+0 & 1 & - \partder{v_p}{w_h} & v_m \partder{v_p}{w_h} & -u_m \partder{v_p}{w_h} & -u_m \\
+0 & 0 & 0 & 0 & 0 & 0
+\end{pmatrix}
+\begin{pmatrix}
+\partder{u}{x} & \partder{u}{y} & \partder{u}{z} & \partder{u}{a} & \partder{u}{b} & \partder{u}{c}  \\ 
+\partder{v}{x} & \partder{v}{y} & \partder{v}{z} & \partder{v}{a} & \partder{v}{b} & \partder{v}{c}  \\ 
+\partder{w}{x} & \partder{w}{y} & \partder{w}{z} & \partder{w}{a} & \partder{w}{b} & \partder{w}{c}  \\ 
+\partder{\alpha}{x} & \partder{\alpha}{y} & \partder{\alpha}{z} & \partder{\alpha}{a} & \partder{\alpha}{b} & \partder{\alpha}{c}  \\ 
+\partder{\beta}{x} & \partder{\beta}{y} & \partder{\beta}{z} & \partder{\beta}{a} & \partder{\beta}{b} & \partder{\beta}{c}  \\ 
+\partder{\gamma}{x} & \partder{\gamma}{y} & \partder{\gamma}{z} & \partder{\gamma}{a} & \partder{\gamma}{b} & \partder{\gamma}{c} 
+\end{pmatrix}
+\]
+where for a strip sensor we only care about the top row of $\partder{z}{a}$ and thus
+\[
+\partder{\vec{z}}{\vec{b}}= 
+\begin{pmatrix}
+\partder{\vec{z}}{x} & \partder{\vec{z}}{y} & \partder{\vec{z}}{\vec{z}} & \partder{\vec{z}}{a} & \partder{\vec{z}}{b} & \partder{\vec{z}}{c} 
+\end{pmatrix}
+=
+\]
+\[
+\begin{pmatrix}
+1 & 0 & -\partder{u_p}{w_h} & v_m \partder{u_p}{w_h} & -u_m \partder{u_p}{w_h} & v_m 
+\end{pmatrix}
+\begin{pmatrix}
+\partder{u}{x} & \partder{u}{y} & \partder{u}{z} & \partder{u}{a} & \partder{u}{b} & \partder{u}{c}  \\ 
+\partder{v}{x} & \partder{v}{y} & \partder{v}{z} & \partder{v}{a} & \partder{v}{b} & \partder{v}{c}  \\ 
+\partder{w}{x} & \partder{w}{y} & \partder{w}{z} & \partder{w}{a} & \partder{w}{b} & \partder{w}{c}  \\ 
+\partder{\alpha}{x} & \partder{\alpha}{y} & \partder{\alpha}{z} & \partder{\alpha}{a} & \partder{\alpha}{b} & \partder{\alpha}{c}  \\ 
+\partder{\beta}{x} & \partder{\beta}{y} & \partder{\beta}{z} & \partder{\beta}{a} & \partder{\beta}{b} & \partder{\beta}{c}  \\ 
+\partder{\gamma}{x} & \partder{\gamma}{y} & \partder{\gamma}{z} & \partder{\gamma}{a} & \partder{\gamma}{b} & \partder{\gamma}{c} 
+\end{pmatrix}
+\]
+
+Normally one calculate the derivatives in the global frame and transforms them into the 
+local frame. In this case the previous chain rule would read
+\[
+\partder{\vec{z}}{\vec{a}}= 
+\partder{\vec{z}}{\vec{b}}  \partder{\vec{b}}{\vec{a}} =
+\partder{\vec{z}}{\vec{b}}  \left(\partder{\vec{a}}{\vec{b}} \right)^{-1} 
+\]
+Since we are interested in only the measurement direction $u$ in $\partder{\vec{z}}{\vec{a}}$ 
+we can write down the terms that will enter into the computation. The first row in 
+$\partder{\vec{z}}{\vec{a}}$ is, with $\vec{z}_x$ is the residual in the $x$ direction,
+\[
+\begin{pmatrix}
+1 & 0 & -\partder{u_p}{w_h} & v_m \partder{u_p}{w_h} & -u_m \partder{u_p}{w_h} & v_m
+\end{pmatrix}
+=
+\]
+\[
+\begin{pmatrix}
+\partder{\vec{z}_x}{x} & \partder{\vec{z}_x}{y} & \partder{\vec{z}_x}{z} & 
+\partder{\vec{z}_x}{a} & \partder{\vec{z}_x}{b} & \partder{\vec{z}_x}{c} 
+\end{pmatrix}
+\begin{pmatrix}
+\partder{x}{u} & \partder{x}{v} & \partder{x}{w} 	& \partder{x}{\alpha} & \partder{x}{\beta} & \partder{x}{\gamma}  \\ 
+\partder{y}{u} & \partder{y}{v} & \partder{y}{w} 	& \partder{y}{\alpha} & \partder{y}{\beta} & \partder{y}{\gamma}  \\ 
+\partder{z}{u} & \partder{z}{v} & \partder{z}{w} 	& \partder{z}{\alpha} & \partder{z}{\beta} & \partder{z}{\gamma}  \\ 
+\partder{a}{u} & \partder{a}{v} & \partder{a}{w} 	& \partder{a}{\alpha} & \partder{a}{\beta} & \partder{a}{\gamma}  \\ 
+\partder{b}{u} & \partder{b}{v} & \partder{b}{w} 	& \partder{b}{\alpha} & \partder{b}{\beta} & \partder{b}{\gamma}  \\ 
+\partder{c}{u} & \partder{c}{v} & \partder{c}{w} 	& \partder{c}{\alpha} & \partder{c}{\beta} & \partder{c}{\gamma} 
+\end{pmatrix}
+\]
+
+
+To summarize, we have shown in this section how to calculate the derivatives of the 
+residual $\vec{z}$ w.r.t. to the six alignment parameters \vec{a}.  
+It is calculated from the derivatives of the residual in the global frame $\partder{\vec{z}}{\vec{b}}$ 
+and transformed using the Jacobian $\partder{\vec{b}}{\vec{a}}$ into the local frame. 
+The Jacobian was derived in this section and the derivatives in the global frame are 
+calculated in Sec.~\ref{sec:gl_gl}.
+
+
+\subsection{Global Derivatives in the Global Frame}
+\label{sec:gl_gl}
+In this section we calculate the global derivatives in the global frame \partder{\vec{z}}{\vec{b}} that 
+is used to compute the global derivatives in the local frame, \partder{\vec{z}}{\vec{a}} which is the 
+input to the minimization.  Following the same logic as in Sec.~\ref{sec:param}  we will express the 
+residual $\vec{z}^{gl}$, with superscript $gl$ denoting that this is in the global frame now, by 
+\[
+\vec{z}^{gl} = \vec{q}^{gl}_a - \vec{q}^{gl}_p =
+\begin{pmatrix}
+x_a \\
+y_a \\
+z_a
+\end{pmatrix}
+-
+\begin{pmatrix}
+x_p \\
+y_p \\
+z_p
+\end{pmatrix}
+\]
+where $ \vec{q}^{gl}_a$ is the alignment corrected hit, 
+\begin{equation}
+\vec{q}^{gl}_a  = \vec{\Delta R'}  \vec{q}^{gl}_h + \vec{\Delta q^{gl}}, 
+\end{equation}
+$\vec{q}^{gl}_p$ is the predicted point of interaction with the sensor.  
+We can write \partder{\vec{z}^{gl}}{\vec{b}}  as,
+\begin{equation}
+\partder{\vec{z}^{gl}}{\vec{b}} =  \partder{\vec{q}^{gl}_a}{\vec{b}} - \partder{\vec{q}^{gl}_p}{\vec{b}} 
+%= \partder{}{\vec{b}} \left( \vec{\Delta R'}  \vec{q}^{gl}_h + \vec{\Delta q^{gl}} \right) - \partder{\vec{q}^{gl}_p}{\vec{b}} 
+\label{eq:derz_derb}
+\end{equation}
+where the first term was already derived for the local frame in Sec.~\ref{sec:param} (\partder{\vec{q}_a}{\vec{a}}). This derivative is the same in the global frame, evaluated at the measured position $\left( x_m,y_m,z_m \right)$,
+\[
+\partder{\vec{q}^{gl}_a}{\vec{b}} = 
+\begin{pmatrix}
+\vec{1} & \partder{\vec{\Delta R}'}{a} \vec{q}^{gl}_h & \partder{\vec{\Delta R}'}{b} \vec{q}^{gl}_h & \partder{\vec{\Delta R}'}{c} \vec{q}^{gl}_h 
+\end{pmatrix} 
+= 
+\begin{pmatrix}
+1 & 0 & 0 & 0       & -z_m & y_m  \\
+0 & 1 & 0 & z_m & 0        & -x_m \\
+0 & 0 & 1 & -y_m  & x_m  & 0        
+\end{pmatrix}
+\]
+ 
+The second term in Eq.~\ref{eq:derz_derb} is the derivative of the predicted position 
+$\vec{q}^{gl}_p=(x_p,y_p,z_p)$ of the track model w.r.t. to the 
+alignment parameters $\vec{b}$. The track model prediction at $x_i$ for hit $i$ is given by 
+$\vec{q}^{gl}_p=f\left(x_i, \vec{\tau}\right)$ where $\vec{\tau}$ are the track parameters $\vec{\tau}=\left(d_0, \phi_0,R,z_0,slope \right)$. Starting from Eq.~\ref{eq:xc} and~\ref{eq:yc}, a generic position $(x,y,z)$ on a helix 
+can be written, 
+\begin{eqnarray}
+x &=& x_c - \R\sin\phi = (\R-d_0)\sin\phi_0 - \R\sin\phi \nonumber \\ 
+y &=& y_c + \R\cos\phi = -(\R-d_0)\cos\phi_0 + \R\cos\phi  \\
+z &=& z_0 - \R\times\slope\times\dphi = z_0 - \R\times\slope\times(\phi-\phi_0). \nonumber
+\end{eqnarray}
+The azimuthal angle at that point can be written,
+\begin{eqnarray}
+\phi(x) &=& \sin^{-1}\left( \frac{1}{\R} \left(  (\R-d_0)\sin\phi_0 - x   \right)  \right)\\
+\phi(y) &=& \sin^{-1}\left( \frac{1}{\R} \left(-\sign{\R} \sqrt{ \R^2 - (y + \left(\R - d_0)\cos\phi_0\right)^2} \right)  \right) \\
+\phi(z) &=& -\frac{z -z_0}{\R\times\slope} + \phi_0 \label{phifromatan} 
+%\phi = \mathrm{atan2}\left(\sin\phi_0-\frac{x-x_0}{\R}, \cos\phi_0 + \frac{y-y_0}{\R} \right). \label{phifromatan} 
+\end{eqnarray}
+
+
+
+
+{\bf A translation in $x$} is calculated by expressing the track model prediction as a function of $x$.
+Using Eq.~\ref{phifromatan} we can calculate $\partder{\vec{q}_p^{gl}}{x}$.
+\begin{eqnarray}
+\partder{x_p}{x} &=& \partder{f\left(x,\vec{\tau}\right)}{x} = 1 \nonumber\\
+\partder{y_p}{x} &=& \partder{y(x)} {x} = -R\sin\phi \partder{\phi}{x} \nonumber \\
+\partder{z_p}{x} &=& \partder{z(x)} {x} = -\R\times\slope\times\partder{\phi}{x}, \nonumber
+\end{eqnarray}
+Similarly, for a {\bf translation in $y$} the derivatives $\partder{\vec{q}_p^{gl}}{y}$ become 
+\begin{eqnarray}
+\partder{x_p}{y} &=& \partder{x(y)}{y} = -\R\cos\phi \partder{\phi}{y} \nonumber \\
+\partder{y_p}{y} &=& \partder{f\left(y,\vec{\tau}\right)}{y} = 1 \nonumber\\
+\partder{z_p}{y} &=& \partder{z(y)}{y} = -\R\times\slope\partder{\phi}{y}, \nonumber \\
+\end{eqnarray}
+and a {\bf translation in $z$} is,
+\begin{eqnarray}
+\partder{x_p}{z} &=& \partder{x(z)}{z}  = -\R\cos\phi \partder{\phi}{z} \nonumber \\
+\partder{y_p}{z} &=& \partder{y(z)}{z}  = -\R\sin\phi\partder{\phi}{z} \nonumber \\
+\partder{z_p}{z} &=& \partder{f\left(z,\vec{\tau}\right)}{z}  = 1, \nonumber\\
+\end{eqnarray}
+The derivatives $\partder{\phi}{x},\partder{\phi}{y},\partder{\phi}{z}$ are given by
+\begin{eqnarray}
+%D[phi[x, d0, phi0, R], x]
+%-(1/(R Sqrt[1 - (-x + (-d0 + R) Sin[phi0])^2/R^2]))
+\partder{\phi}{x} &=& -\frac{1}{R \sqrt{1 - \frac{(-x + (-d_0 + R) \sin\phi_0)^2}{ R^2}}} \\
+%((x + (-d0 + R) Cos[phi0]) Sign[R])/(R Sqrt[ R^2 - (x + (-d0 + R) Cos[phi0])^2] Sqrt[ 1 - ((R^2 - (x + (-d0 + R) Cos[phi0])^2) Sign[R]^2)/R^2])
+\partder{\phi}{y} &=& \frac{A_y \sign{R}}{(R \sqrt{ R^2 - A_y^2} \sqrt{ 1 - \frac{ (R^2 - A_y^2) \sign{R}^2} {R^2} } )} \\
+%{\tiny
+%\begin{eqnarray}
+%phifromatan2alt[x_, d0_, phi0_, R_] := 
+%  ArcTan[Sin[phi0] - (x + d0*Sin[phi0])/R , 
+%   Cos[phi0] + ((-(R - d0)*Cos[phi0] + 
+%         Sqrt[R^2 - (x - (R - d0) Sin[phi0])^2]) - d0*Cos[phi0])/R ];
+%Simplify[D[phifromatan2alt[x, d0, phi0, R] , x]]
+%1/Sqrt[R^2 - (x + (d0 - R) Sin[phi0])^2]
+%\partder{\phi}{x} &=& \frac{1}{R^2-\left(+\left(d_0-R\right)\sin\phi_0\right)^2} \lable{eq:phidefsx}.
+%\partder{\phi}{x} &=& \frac{-R^2\signR}{ \sqrt{ R^2-\left( x + (d_0-R)\sin\phi_0  \right)^2  }    \left(-(x + (d_0 - R)\sin\phi_0)^2 + \signR^2 \left(-R^2 + x^2 + 2(d_0 - R)x\sin\phi_0 + (d_0 - R)^2\sin^2\phi_0 \right)\right)   } 
+%shorten sinphi0 = s_0
+%\partder{\phi}{x} &=& \frac{-R^2\signR}{ \sqrt{ R^2-\left( x + (d_0-R)s_0  \right)^2  }    \left(-(x + (d_0 - R)s_0)^2 + \signR^2 \left(-R^2 + x^2 + 2(d_0 - R)xs_0 + (d_0 - R)^2\sin^2\phi_0 \right)\right)   }
+%\end{eqnarray}
+%}
+%{ \tiny
+%\begin{eqnarray}
+%phifromatan2[y_, d0_, phi0_, R_] :=  ArcTan[Sin[  phi0] - (((R - d0)*Sin[phi0]) +   Sign[R]*Sqrt[R^2 - (y + (R - d0)*Cos[phi0])^2] + d0*Sin[phi0])/     R , Cos[phi0] + (y - d0*Cos[phi0])/R ];
+%Simplify[D[phifromatan2[y, d0, phi0, R], y]]
+%(R^2 Sign[R])/(Sqrt[   R^2 - (y + (-d0 + R) Cos[     phi0])^2] (-(y + (-d0 + R) Cos[phi0])^2 + (-R^2 + y^2 -  2 (d0 - R) y Cos[phi0] + (d0 - R)^2 Cos[phi0]^2) Sign[R]^2))
+%\partder{\phi}{y} = \frac{R^2\signR}{\sqrt{ R^2 - (y + (-d_0 + R) c_0)^2} \left(-(y + (-d_0 + R) c_0)^2 + (-R^2 + y^2 -  2 (d_0 - R) y c_0 + (d_0 - R)^2 c_0^2) \signR^2 \right)}
+%\end{eqnarray}
+%}
+\partder{\phi}{z} &=& \partder{}{z}\left( -\frac{z-z_0}{R\times\slope} + \phi_0 \right) =  -\frac{1}{R\times\slope} 
+\end{eqnarray}
+where $A_y = y + (-d_0 + \R) \cos\phi_0$, $s_0=\sin\phi_0$ and $c_0=\cos\phi_0$.
+
+
+The change of the {\bf predicted position in the global frame w.r.t. to a rotation $(a,b,c)$} around the axes $(x,y,z)$ can be calculated using the same assumption as above. Note 
+that the rotation is not around the center of the sensor. However, the effect on 
+the predicted hit position w.r.t. the rotation of the sensor can be shown to be 
+equivalent to the rotation of the hit position $\vec{q}^{gl}_h$. Thus, these derivatives are 
+set to zero as they as they are already included:
+\[
+\partder{}{(a,b,c)} \left(\vec{q}^{gl}_p \right) =  
+\begin{pmatrix}
+\partder{\vec{\Delta R}'}{a} \vec{q}^{gl}_p  & \partder{\vec{\Delta R}'}{b} \vec{q}^{gl}_p & \partder{\vec{\Delta R}'}{c} \vec{q}^{gl}_p 
+\end{pmatrix}
+=
+\begin{pmatrix}
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+\end{pmatrix}
+\]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+\section{Local Derivatives}
+\label{sec:localders}
+
+This section describes the calculation of how a small change in the track parameters impacts the predicted 
+hit position $\vec{q}_p$ i.e. the derivatives of the track model $f\left( \vec{q}\right)$ w.r.t. the track model parameters $\vec{\tau}$. Note that we are interested in the derivatives in the local sensor plane as this is 
+where the residual is computed. Thus we want to calculate the partial derivatives 
+\partder{\vec{z}}{vec{\tau}}  for each hit $i$ where $\vec{z}$ is there residual in the ($u,v,w$) coordinates. Since the transformation from the global to local frame do not depend on the track parameters we can write
+\begin{equation}
+\partder{\vec{z} }{\vec{\tau}} = \partder{}{\vec{\tau}} \left( \vec{y} - f\left(x,\vec{\tau}\right) \right) = - \partder{f\left( x,\vec{\tau} \right)}{\vec{\tau}} = -\vec{T} \partder{f\left( x,\vec{\tau} \right)}{\vec{\tau}} 
+\end{equation}
+where the measured hit position in the $x,y,z$ coordinates is $\vec{y}$ and the 
+function is evaluated at a point $x$ along the $x$-axis. $\vec{T}$ is the rotation matrix from the global to local frame. 
+
+
+Express $\phi$ as a function of the track parameters $\vec{\tau}$ and the 
+interaction point along the beam line $x$, using Eq.~\ref{eq:xc},
+\begin{eqnarray}
+\sin\phi &=& \frac{1}{R}\left( x_c-x \right) =  \frac{1}{R}\left( \left(R-d_0\right)\sin\phi_0 - x \right) \nonumber \\ 
+\phi &=& \arcsin\left( \frac{1}{R}\left(  \left(R-d_0\right)\sin\phi_0 - x \right) \right). \label{eq:phifromsin}
+\end{eqnarray}
+Then using, 
+\begin{eqnarray}
+x &=& x_c - R\sin\phi = (R-d_0)\sin\phi_0 - R\sin\phi \nonumber \\
+y &=& y_c + R\cos\phi = -(R-d_0)\cos\phi_0 + R\cos\phi \nonumber \\
+z &=& z_0 + s\times\slope=z_0-R\times\slope\left( \phi - \phi_0 \right),
+\end{eqnarray}
+we can calculate the local derivatives $\partder{f(\vec{x},\vec{\tau})}{\vec{\tau}}$ where $\vec{x}=(x,y,z)$. 
+
+$\partder{f\left(x,\vec{\tau} \right)}{\qvec}$:
+\begin{eqnarray}
+\partder{f\left(x,\vec{\tau} \right)}{d_0} &=& -\sin\phi_0 - R\cos\phi\partder{\phi}{d_0} \nonumber  \\
+\partder{f\left(x,\vec{\tau} \right)}{z_0} &=& -R\cos\phi\partder{\phi}{z_0} \nonumber  \\
+\partder{f\left(x,\vec{\tau} \right)}{\phi_0} &=& (R-d_0)\cos\phi_0 - R\cos\phi\partder{\phi}{phi_0} \nonumber  \\
+\partder{f\left(x,\vec{\tau} \right)}{R} &=& \sin\phi_0 - R\cos\phi\partder{\phi}{R}  - \sin\phi  \nonumber \\
+\partder{f\left(x,\vec{\tau} \right)}{R} &=& \sin\phi_0 - R\cos\phi\partder{\phi}{R}  \nonumber \\
+\partder{f\left(x,\vec{\tau} \right)}{\slope} &=& R\cos\phi\partder{\phi}{\slope},
+\end{eqnarray}
+
+$\partder{f\left(y,\vec{\tau} \right)}{\qvec}$:
+\begin{eqnarray}
+\partder{f\left(y,\vec{\tau} \right)}{d_0} &=& \cos\phi_0 - R\sin\phi\partder{\phi}{d_0} \nonumber  \\
+\partder{f\left(y,\vec{\tau} \right)}{z_0} &=& -R\sin\phi\partder{\phi}{z_0} \nonumber  \\
+\partder{f\left(y,\vec{\tau} \right)}{\phi_0} &=& (R-d_0)\sin\phi_0 - R\sin\phi\partder{\phi}{\phi_0} \nonumber  \\
+\partder{f\left(y,\vec{\tau} \right)}{R} &=& -\cos\phi_0 - R\sin\phi\partder{\phi}{R} + \cos\phi \nonumber \\
+%\partder{f\left(y,\vec{\tau} \right)}{R} &=& -\cos\phi_0 - R\sin\phi\partder{\phi}{R}  \nonumber \\
+\partder{f\left(y,\vec{\tau} \right)}{\slope} &=& -R\sin\phi\partder{\phi}{\slope}
+\end{eqnarray}
+
+$\partder{f\left(z,\vec{\tau} \right)}{\qvec}$:
+\begin{eqnarray}
+\partder{f\left(z,\vec{\tau} \right)}{d_0} &=& -R\times\slope\partder{\phi}{d_0} \nonumber  \\
+\partder{f\left(z,\vec{\tau} \right)}{z_0} &=& 1 \nonumber \\
+\partder{f\left(z,\vec{\tau} \right)}{\phi_0} &=& -R\times\slope \left( \partder{\phi}{phi_0}-1 \right) \nonumber  \\
+\partder{f\left(z,\vec{\tau} \right)}{R} &=& -\slope\times \left( \phi - \phi_0 + R\partder{\phi}{R} \right) \nonumber  \\
+\partder{f\left(z,\vec{\tau} \right)}{\slope} &=& s = -R(\phi -\phi_0)
+\end{eqnarray}
+
+where $\partder{\phi}{\qvec}$ above is calculated using Eq.~\ref{eq:phifromsin},
+
+\begin{eqnarray}
+%phifromsin[x_, d0_, phi0_, R_] := ArcSin[((R - d0)*Sin[phi0] - x)/R];
+%Simplify[D[phifromsin[x, d0, phi0, R], d0]]
+%-(Sin[phi0]/(R Sqrt[1 - (x + (d0 - R) Sin[phi0])^2/R^2]))
+\partder{\phi}{d_0} = &=& \frac{-\sin\phi_0}{R\sqrt{1 - \frac{\left(x + (d_0 - R) \sin\phi_0 \right)^2 }{R^2} }} \nonumber \\
+%Simplify[D[phifromsin[x, d0, phi0, R], phi0]]
+%((-d0 + R) Cos[phi0])/(R Sqrt[1 - (x + (d0 - R) Sin[phi0])^2/R^2])
+\partder{\phi}{\phi_0} &=& \frac{-\left( d_0 - R \right) \cos\phi_0}{R\sqrt{1-\frac{\left(x+(d_0-R)\sin\phi_0\right)^2}{R^2}}} \nonumber \\
+%Simplify[D[phifromsin[x, d0, phi0, R], R]]
+%(x + d0 Sin[phi0])/(R^2 Sqrt[1 - (x + (d0 - R) Sin[phi0])^2/R^2])
+\partder{\phi}{R} &=& \frac{x+d_0 \sin\phi_0}{R^2 \sqrt{1-\frac{\left( x+(d_0-R) \sin\phi_0 \right)^2}{R^2}}} \nonumber \\
+\partder{\phi}{slope} &=& 0 \nonumber \\
+\partder{\phi}{z_0} &=& 0
+\end{eqnarray}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%\section{Transformation to the Sensor Frame}
+%In the above sections all equations have been in what we call the ``tracking frame'' which is described in Sec.~\ref{sec:frames}. 
+%Normally residuals, and thus the derivatives, are measured on the so-called ``sensor frame'' which is a 
+%coordinate system local to each sensor or plane. Typically this is defined with $u$ being the well-measured 
+%coordinate, $v$ being the less well-measured coordinate and $w$ normal to the sensor plane. In our case 
+%it means that $v$ is parallel to the strips and $u$ is the measurement direction. 
+%
+%When aligning a strip sensor there is only one measured direction of the hit for each plane/sensor, the $u$ 
+%direction. Thus, the only residual that will go into the alignment is in that direction. In the case of the 
+%HPS experiment the $u$ direction is close to parallel with the tracking frame $z$ direction for the axial 
+%sensors. 
+%
+%Thus to properly prepare the input to the alignment all the derivatives (and residuals) have to 
+%be transformed into the corresponding values in the $u$ direction. Practically this means that for 
+%axial sensors, that have $u$ close to parallel with $z$, the $z$ contribution will dominate. For the 
+%stereo sensors the stereo angle will cause contributions from $x,y$ direction to contribute more. 
+%
+%The translation and rotation matrices, {\bf $T$} are built using the detector geometry 
+%package which takes as input a xml file describing the position and rotations of the sensors. To take a 
+%vector of predicted hit positions on a sensor, $\bf{q}_p^t$, from the tracking to the sensor frame:
+%\begin{eqnarray}
+%{\bf q}_p^s = {\bf T}_{T->S} {\bf q}_p 
+%\end{eqnarray}
+%where  ${\bf T}_{T->S}$ is the transformation matrix going from the tracking to sensor frame for a given 
+%sensor. In the current software this is practically done by going to the global coordinate system, called 
+%the ``detector frame'',
+%\begin{eqnarray}
+%{\bf T}_{T->S} &=& {\bf T}_{D->S} {\bf T}_{T->D}^{-1} \nonumber \\
+%{\bf q}_p^s &=& {\bf T}_{D->S} {\bf T}_{T->D}^{-1} {\bf q}_p 
+%\end{eqnarray}
+%where ${\bf T}_{T->D}^{-1}$ is the inverse of the transformation matrix going from tracking frame to detector frame 
+%and ${\bf T}_{D->S}$ is the transformation from the detector to the sensor frame. 
+%
+%
+%These transformation are applied to all the vector of derivatives, both the local $\partder{\bf{f}(\qvec)}{\qvec}$ 
+%and global $\partder{\bf{f}(\qvec)}{\bf{x}}$ in order to extract their contribution to the $u$ direction 
+%residual which is used in the alignment.  
+
+
+\newpage
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\appendix
+
+\section*{Appendix}
+\subsection*{Practical Formulas}
+
+\begin{equation}
+y = y_c + \sign(\R)\times\sqrt{\left( \R^2 - \left(x-x_c\right)^2   \right)} \label{eq:yofx}
+\end{equation}
+\begin{equation}
+x = x_c + \sign(\R)\times\sqrt{\left( \R^2 - \left(y-y_c\right)^2   \right)} \label{eq:xofy}
+\end{equation}
+\begin{equation}
+\dphi = \phitwo - \phione \label{eq:dphi} \\
+\end{equation}
+
+
+Arc length, $\mathrm{s}$, can be written as:
+\begin{equation}
+\mathrm{s} = -\dphi \times \R .
+\label{eq:sl}
+\end{equation}
+
+
+\begin{equation}
+        \partder{y_c}{d_0} = \frac{ \signR^2\sinphizero\left(x-x_c\right) } 
+{\sqrt{ \R^2 - \signR^2\left(\R^2 - \left( x-x_c\right)^2\right)}  }
+\label{eq:df_dd0}
+%    public double ddeltayc_dd0(double x, double xr, double d0,double phi0, double R) {
+%        double num = sign(R)*sign(R) * Math.sin(phi0) * (x-xc(xr,d0,phi0,R));
+%        double den = Math.sqrt( R*R - sign(R)*sign(R) * (R*R - Math.pow( x-xc(xr,d0,phi0,R), 2)));
+%        
+%        return num/den;
+%    }
+\end{equation}
+
+
+
+
+
+
+\section*{Alternative calcualtion of $\partder{\phi}{\qvec}$}
+We can express $\phi$ as a function of the track parameter $\vec{\tau}$  
+using Eq.~\ref{eq:circle} together with $y=y_c+R\times\cos\phi$ and $x_c=(R-d_0)\sin\phi_0$
+\begin{eqnarray}
+\left( \cos\phi \right)^2 &=& \frac{1}{R^2}\left( R^2 - \left( x-x_c \right)^2 \right) \nonumber \\ 
+\left( \cos\phi \right)^2 &=& \frac{1}{R^2}\left( R^2 - \left( x-(R-d_0)\sin\phi_0 \right)^2 \right) \nonumber \\ 
+\phi &=& \cos^{-1}\left( \sqrt{ 1 -  \left( \frac{  x-(R-d_0)\sin\phi_0}{R} \right)^2    }    \right) \label{eq:phifromcos}
+\end{eqnarray}
+
+
+and the local track derivatives are becomes,
+\begin{eqnarray}
+%Simplify[D[phi[x, d0, phi0, R], d0]]
+%(Sin[phi0] (x + (d0 - R) Sin[
+%     phi0]))/(R^2 Sqrt[((x + (d0 - R) Sin[
+%      phi0])^2 (1 - (x + (d0 - R) Sin[phi0])^2/R^2))/R^2])
+\partder{\phi}{d_0} &=&  \frac{\sin\phi_0 \left(x + \left(d_0 - R\right) \sin\phi_0\right)}{R^2 \sqrt{\frac{\left(x + \left(d_0 - R\right) \sin\phi_0\right)^2 \left(1 - \frac{\left(x + (d_0 - R) \sin\phi_0\right)^2}{R^2}\right)}{R^2}}} \nonumber  \\
+\partder{\phi}{\phi_0} &=&\frac{\left(d_0 - R\right) \cos\phi_0 \left(x + \left(d_0 - R\right) \sin\phi_0\right)} { R^2 \sqrt{ \frac{\left(x + \left(d_0 - R\right) \sin\phi_0\right)^2 \left(1 - \frac{\left(x + \left(d_0 - R\right) \sin\phi_0\right)^2}{R^2}\right)}{R^2}}} \nonumber  \\
+%Simplify[D[phi[x, d0, phi0, R], phi0]]
+%((d0 - R) Cos[
+%  phi0] (x + (d0 - R) Sin[
+%     phi0]))/(R^2 Sqrt[((x + (d0 - R) Sin[
+%      phi0])^2 (1 - (x + (d0 - R) Sin[phi0])^2/R^2))/R^2])
+\partder{\phi}{R} &=& -\left( \frac{ \left(x + d_0 \sin\phi_0\right) \left(x + \left(d_0 - R\right) \sin\phi_0\right)}{ R^3 \sqrt{ \frac{ \left(x + \left(d_0 - R\right) \sin\phi_0\right)^2 \left(1 - \frac{ \left(x + \left(d_0 - R\right) \sin\phi_0\right)^2}{R^2}\right)}{R^2}}} \right) \nonumber \\
+%Simplify[D[phi[x, d0, phi0, R], R]]
+%-(((x + d0 Sin[phi0]) (x + (d0 - R) Sin[phi0]))/(
+% R^3 Sqrt[((x + (d0 - R) Sin[phi0])^2 (1 - (x + (d0 - R) Sin[phi0])^2/
+%     R^2))/R^2]))
+\partder{\phi}{slope} &=& 0 \nonumber \\
+\partder{\phi}{z0} &=& 0
+\end{eqnarray}
+
+
+
+
+
+
+\begin{thebibliography}{9}
+
+\bibitem{cms_align}
+Markus Stoye, 
+\emph{Calibration and Alignment of the CMS Silicon Tracking Detector},
+Dissertation,
+2007.
+
+\end{thebibliography}
+
+
+
+
+\end{document}

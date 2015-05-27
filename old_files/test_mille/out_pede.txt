@@ -1,0 +1,229 @@
+ ($Rev: 99 $)
+ using OpenMP (TM)
+ compiled with gcc 4.7.1
+ Large integers are INTEGER*8
+  
+   <  Millepede II-P starting ... Mon Aug 20 09:50:47 2012
+                                                          
+  
+  
+ ________________________________FILETC/X__________________________________
+  
+  
+ Command line options: 
+ --------------------- 
+  1  steer_u_top.txt
+ --------------------- 
+  
+ Listing of steering file: steer_u_top.txt
+ -------------------------
+  1  
+  2  Cfiles
+  3  alignMP_1351_50k_u.txt.bin
+  4  
+  5  Parameter
+  6  11101     0        -1
+  7  11102     0        0
+  8  11103     0        0
+  9  11104     0        0
+ 10  11105     0        0
+ 11  11106     0        0
+ 12  11107     0        0
+ 13  11108     0        0
+ 14  11109     0        0
+ 15  11110     0        0
+ 16  11201     0        -1
+ 17  11202     0        0
+ 18  11203     0        0
+ 19  11204     0        0
+ 20  11205     0        0
+ 21  11206     0        0
+ 22  11207     0        0
+ 23  11208     0        0
+ 24  11209     0        0
+ 25  11210     0        -1
+ 26  11301     0        0
+ 27  11302     0        0
+ 28  11303     0        0
+ 29  11304     0        0
+ 30  11305     0        0
+ 31  11306     0        0
+ 32  11307     0        0
+ 33  11308     0        0
+ 34  11309     0        0
+ 35  11310     0        0
+ 36  12101     0        -1
+ 37  12102     0        0
+ 38  12103     0        0
+ 39  12104     0        0
+ 40  12105     0        0
+ 41  12106     0        0
+ 42  12107     0        0
+ 43  12108     0        0
+ 44  12109     0        0
+ 45  12110     0        0
+ 46  12201     0        -1
+ 47  12202     0        0
+ 48  12203     0        0
+ 49  12204     0        0
+ 50  12205     0        0
+      ...
+     end-statement after          75  text lines
+ -------------------------
+  
+ initC: using zlib version 1.2.5
+ Opening C file            1 : alignMP_1351_50k_u.txt.bin
+           1  binary files opened
+  
+ Processing text files ...
+  
+ File steer_u_top.txt
+     end-statement after          75  text lines
+  
+ ... end of text file processing.
+  
+  
+ Solution method and matrix-storage mode:
+      METSOL = 1:  matrix inversion
+                   with           6  iterations
+      MATSTO = 1:  symmetric matrix, (n*n+n)/2 elements
+ Chi square cut equiv 3 st.dev applied ...
+  in  first iteration with factor   30.0000000    
+  in second iteration with factor   6.00000000    
+  (reduced by sqrt in next iterations)
+  
+ ______________________________FILETC/X-end________________________________
+  
+
+ Number of processors available:              2
+ Maximum number of OpenMP threads:            1
+ Number of threads for processing:            1
+ Number of threads for reading:               1
+  
+ _________________________________LOOP1____________________________________
+  
+ Read all binary data files:
+ PEREAD: file            1 read the first time, found        7847  records
+  Record            1
+  Record           10
+  Record          100
+  Record         1000
+ PEREAD: file            1 with max record size          262
+
+ Read  cache usage (#blocks, #records, min,max records/block
+                          1      7847      7847      7847
+ __________________________________________________________________
+ Histogram           1 /           0 : Number of words/record in binary file                       
+    0_or_negative  inside  above_10^6 =            0        7847           0
+                                                                   
+                              52                                   
+                              26                                   
+                              22                                   
+ E 00 ._______________________25___________________________________
+                1         2   *     3         4         5         6
+        2 4 6 8 0 2 4 6 8 0 2 4 6 8 0 2 4 6 8 0 2 4 6 8 0 2 4 6 8 0
+     0.00      1.00      2.00      3.00      4.00      5.00      6.00    
+    Plot of log10 of entries. Min and Max are         210         262
+ SORT2K (quicksort): maxlevel used/available =           8 /64
+ __________________________________________________________________
+ Histogram           2 /           0 : Number of entries per label                                 
+    0_or_negative  inside  above_10^6 =            0          60           0
+                                                                   
+                                           1 4                     
+ E 00 .____________________________________2_8_____________________
+                1         2         3        *4         5         6
+        2 4 6 8 0 2 4 6 8 0 2 4 6 8 0 2 4 6 8 0 2 4 6 8 0 2 4 6 8 0
+     0.00      1.00      2.00      3.00      4.00      5.00      6.00    
+    Plot of log10 of entries. Min and Max are        4302        7676
+ LOOP1:           0  is number of pre-sigmas
+ Warning: no pre-sigmas defined
+ Default pre-sigma = 0.00E+00 (if no individual pre-sigma defined)
+ Pre-sigma factor is   1.00000000    
+ No regularization will be done
+   NTGB =        60 = total number of parameters
+   NVGB =        54 = number of variable parameters
+  
+   NREC =      7847 = number of records
+ MREQEN =        10 = required number of entries
+   NTGB =        60 = total number of parameters
+   NVGB =        54 = number of variable parameters
+  
+  
+  
+ _______________________________LOOP1-end__________________________________
+   0 h  0 min  0.0 sec total                  elapsed   0 h  0 min  0.0 sec
+  
+  
+ _________________________________LOOP2____________________________________
+  
+ LOOP2:           0  constraints
+  Record            1
+  Record           10
+  Record          100
+  Record         1000
+
+ Read  cache usage (#blocks, #records, min,max records/block
+                          1      7847      7847      7847
+  
+   NTGB =        60 = total number of parameters
+                      (all parameters, appearing in binary files)
+   NVGB =        54 = number of variable parameters
+                      (appearing in fit matrix/vectors)
+   NAGB =        54 = number of fit parameters
+                      (including Lagrange multiplier or reduced)
+ MBANDW =         0 = band width of band matrix
+                      (if =0, no band matrix)
+   NOFF =      1431 = max number of off-diagonal elements
+   NCGB =         0 = number of constraints
+  NAGBN =        54 = max number of global parameters in an event
+  NALCN =         5 = max number of local parameters in an event
+  NAEQN =        10 = max number of equations in an event
+ NCACHE =  25000000 = number of words for caching
+                      cache splitting    7.3 %   1.9 %  90.7 %
+  
+  
+ Solution method and matrix-storage mode:
+      METSOL = 1:  matrix inversion
+                   with           6  iterations
+      MATSTO = 1:  symmetric matrix, (n*n+n)/2 elements
+ Convergence assumed, if expected dF <   1.000    
+  
+  
+ Size of global matrix: < 1 MB
+  
+ _______________________________LOOP2-end__________________________________
+   0 h  0 min  0.1 sec total                  elapsed   0 h  0 min  0.0 sec
+  
+  
+ _______________________________Iteration__________________________________
+  
+  
+ Solution algorithm: 
+ ========================================
+                         solution method:   matrix inversion
+            convergence limit at Delta F=   0.10E+01
+            maximum number of iterations=   6
+                        using pre-sigmas:   no
+                          regularization:   no
+    Chi square cut equiv 3 st.dev applied
+       ... in first iteration with factor   0.30E+02
+      ... in second iteration with factor   0.60E+01
+     (reduced by sqrt in next iterations)
+  
+ Checking feasibility of parameters:
+    parameters are feasible  (i.e. satisfy constraints)
+  
+ Reading files and accumulating vectors/matrices ...
+  
+
+ Read  cache usage (#blocks, #records, min,max records/block
+                          2      7847       296      7551
+ Write cache usage (#flush,#overrun,<levels>,peak(levels))
+      2      0,  19.8%  20.0%  38.1%  38.4%
+  
+ Data rejected in initial loop:
+            3925  (rank deficit/NaN)            0  (Ndf=0)             23  (huge)              8  (large)
+  
+ Data rejected in previous loop:   
+            3925  (rank deficit/NaN)            0  (Ndf=0)             23  (huge)              8  (large)
+ Too many rejects (>33.3%) - stop

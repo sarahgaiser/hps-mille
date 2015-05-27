@@ -1,0 +1,16 @@
+*            Default test steering file
+fortranfiles ! binary file are fortran
+mp2con.txt   ! constraints text file 
+mp2tst.bin   ! binary data file
+*outlierrejection 100.0 ! reject if Chi^2/Ndf >
+*outliersuppression 3   ! 3 local_fit iterations
+ 
+*bandwidth 6 ! width of band matrix
+method diagonalization 5 0.001 ! diagonalization      
+method fullGMRES       5 0.01 ! minimal residual     
+method sparseGMRES     5 0.01 ! minimal residual     
+method cholesky        5 0.001 ! Cholesky             
+method bandcholesky    5 0.1   ! Cholesky             
+method inversion       3 0.001 ! Gauss matrix inversion
+* last method is applied
+ 

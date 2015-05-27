@@ -1,0 +1,405 @@
+#include "MilleParser.h"
+//#include "Mille.h"
+#include <vector>
+#include <cstdlib>
+
+//using namespace std;
+
+MilleParser::MilleParser(std::string fileName, std::string outFileName, bool debug) {
+ // :
+ //  m_mille(outFileName.c_str(), true, false) {
+  
+  m_fileName = fileName;
+  m_outFileName = outFileName;
+  m_debug = debug;
+  
+  //m_mille = new Mille(outFileName.c_str(), true, false);
+  //m_mille = new Mille("test.txt", true, false);
+  
+}
+
+MilleParser::~MilleParser() {
+  // std::cout << "Deleting mille" << std::endl;
+  // delete m_mille;
+  // std::cout << "After deleting mille" << std::endl;
+}
+
+
+
+
+
+
+
+void MilleParser::Analyze(int opt, int max) {
+
+  if(opt==0) return AnalyzeNew(max);
+  else return AnalyzeOld(max);
+
+}
+
+
+
+
+
+
+
+void MilleParser::AnalyzeNew(int max) {
+
+  
+  //Read file line by line
+  std::ifstream fin;
+  fin.open(m_fileName.c_str());
+  if(m_debug) std::cout << "Opening file " << m_fileName << std::endl;
+
+
+  if(!fin.good()) {
+    std::cout << "ERROR file input not ok!" << std::endl;
+    exit(1);
+  }
+  
+  TrackAlignObj trkObj;
+  std::vector<TrackAlignObj> trkObjs;
+  std::string line;
+  int c = 0;
+ 
+  while(!fin.eof() && ((int)trkObjs.size())<max) {
+    getline(fin,line);
+    
+    if(((int)trkObjs.size())%100==0 && c==1) 
+      std::cout << "Processing fit " << trkObjs.size() << std::endl;
+
+    if(m_debug) std::cout << "Line: " << line << "  c=" << c << std::endl;
+    
+    // Order is:
+    // Layer
+    // res_dir Res ErrorRes (local derivatives: 5 of them)
+    // lc_dir dfdq (5 of them)
+    // gl_dir dfdp (varying nr)
+
+    std::istringstream iss(line);
+    std::vector<std::string> items;
+    std::string item;
+
+    //Split row into objects
+    while(iss>>item) {      
+      items.push_back(item);
+    }
+
+    //If it's a single item then we should have a layer
+    if(items.size()==1) {
+      //Layer!
+      
+      //Check if it exists
+      if(trkObj.GetLayer()!=-1) {
+	//this is a new object
+	// save the existing one and clear if it's ok
+	if(trkObj.ok()) {
+	  trkObjs.push_back(trkObj);
+	} else {
+	  std::cout << "ERROR trkObj not ok " << std::endl;
+	  std::cout << "Line: " << line << std::endl;
+	  trkObj.print();
+	  //exit(1);
+	}
+	//clear it to start a new track
+	trkObj.clear();
+      }
+      //Add the layer to the object and then go to next line
+      trkObj.Layer(items[0]);
+      c=1;
+      continue;
+    } 
+    
+  
+    std::string type = findType(items[0]);
+    std::string type = findDirection(items[0],type);
+    
+    if(type=="res") {
+      
+    }
+
+    if (c==1) {
+      trkObj.AddRes(items);
+    }
+    else if (c==2) {
+      trkObj.AddResErr(items);
+    }
+    else if (c>2 && c<8) {
+      trkObj.AddDerLC(items,c-3);
+    }
+    else if (c>=8) {
+      trkObj.AddDerGL(items);
+    }      
+    
+    //trkObj.print();
+    ++c;
+    
+    
+  }
+
+  std::cout << "Read " << trkObjs.size() << " tracks. Now put them in mille!" << std::endl;
+  
+
+  Mille* m_mille = new Mille(m_outFileName.c_str(), true, false);
+  const int NLC = 5;
+  float derLc[NLC];
+  float * derGl = NULL;
+  int * label = NULL;
+  int NGL;
+
+  for(size_t t=0;t<trkObjs.size();++t) {
+    
+    if(((int)t)%1000==0 || m_debug) {
+      std::cout << "Processing fit " << t << std::endl;
+      //trkObjs[t].print();
+    }
+    
+    //Same nr of global parameters for each direction
+    NGL = trkObjs[t].NGL();
+    derGl = new float[NGL];
+    label = new int[NGL];
+    
+    for(size_t idx=0;idx<3;++idx) {	
+      
+      
+      float  rMeas = trkObjs[t].GetRes(idx);	
+      float sigma = trkObjs[t].GetErr(idx);	
+      trkObjs[t].GetDerLC(derLc,idx);
+      
+      // for(int igl=0;igl!=NGL;++igl) {
+      // 	trkObjs[t].GetDerGL(derGl,igl,idx,label[igl]);
+      // }
+      trkObjs[t].GetDerGL(derGl,label,idx);
+      
+      m_mille->mille(NLC,derLc,NGL,derGl,label,rMeas,sigma);
+      if(m_debug) {
+	
+	std::cout << "(layer="<<trkObjs[t].GetLayer()<<") axis " << idx << ":\n " << rMeas << " " << sigma << std::endl;
+	for(int i=0;i!=NLC;++i) std::cout << " " << derLc[i];
+	std::cout << std::endl;
+	for(int i=0;i!=NGL;++i) std::cout << " " << derGl[i] << "("<<label[i]<<")  ";
+	std::cout << std::endl;	
+	
+      }
+    }
+    
+    //Should be called for each local-fit object -> each track!?
+    m_mille->end();
+    
+    delete [] derGl;
+    delete [] label;
+    
+  }
+    
+    
+  std::cout << "Deleting mille" << std::endl;
+  delete m_mille;
+  std::cout << "After deleting mille" << std::endl;
+    
+
+
+  
+  return;  
+  
+  
+}
+
+
+
+
+  std::string findType(std::string str) {
+
+      std::string type;
+      size_t found = str.find_first_of("_");
+      if(found==std::string::npos) {
+	std::cout << "ERROR this string has no valid type? " << str << std::endl;
+	exit(1);      
+      }
+      std::string type = str.substr(0,found);
+      return type;
+    }
+      
+std::string findDirection(std::string str, std::string type) {
+
+      std::string type;
+      size_t found = str.find(str+"_");
+      if(found==std::string::npos) {
+	std::cout << "ERROR this string has no valid type? " << str << std::endl;
+	exit(1);      
+      }
+      std::string direction = str.substr(found,found+1);
+      return direction;
+    }
+      
+
+
+
+
+void MilleParser::AnalyzeOld(int max) {
+
+  
+  //Read file line by line
+  std::ifstream fin;
+  fin.open(m_fileName.c_str());
+  if(m_debug) std::cout << "Opening file " << m_fileName << std::endl;
+
+
+  if(!fin.good()) {
+    std::cout << "ERROR file input not ok!" << std::endl;
+    exit(1);
+  }
+  
+  TrackAlignObj trkObj;
+  std::vector<TrackAlignObj> trkObjs;
+  std::string line;
+  int c = 0;
+ 
+  while(!fin.eof() && ((int)trkObjs.size())<max) {
+    getline(fin,line);
+    
+    if(((int)trkObjs.size())%100==0 && c==1) 
+      std::cout << "Processing fit " << trkObjs.size() << std::endl;
+
+    if(m_debug) std::cout << "Line: " << line << "  c=" << c << std::endl;
+    
+    // Order is:
+    // Layer
+    // ResX ResY ResZ
+    // ErrorResX ErrorResY ErrorResZ
+    // dfdq_x dfdq_y dfdq_z (1)
+    // dfdq_x dfdq_y dfdq_z (2)
+    // dfdq_x dfdq_y dfdq_z (3)
+    // dfdq_x dfdq_y dfdq_z (4)
+    // dfdq_x dfdq_y dfdq_z (5)
+    // dfdp_x dfdp_y dfdp_z 
+
+    //if(c>9) {
+    //  std::cout << "ERROR!!!" << std::endl;
+    //  exit(1);
+    //}
+
+    std::istringstream iss(line);
+    std::vector<std::string> items;
+    std::string item;
+    while(iss>>item) {      
+      items.push_back(item);
+    }
+    if(items.size()==1) {
+      //Layer!
+      if(trkObj.GetLayer()!=-1) {
+	//this is a new object
+	// save the existing one and clear if it's ok
+	if(trkObj.ok()) {
+	  trkObjs.push_back(trkObj);
+	} else {
+	  std::cout << "ERROR trkObj not ok " << std::endl;
+	  std::cout << "Line: " << line << std::endl;
+	  trkObj.print();
+	  //exit(1);
+	}
+	trkObj.clear();
+      }      
+      trkObj.Layer(items[0]);
+      c=1;
+      continue;
+    } 
+    
+    if(items.size()<3) {
+      std::cout << "ERROR wrong items size for c " << c << ":\n " << std::endl; 
+      std::cout << line << std::endl;
+      if(c<8) {
+	while(items.size()<3) items.push_back("0");
+      }
+      else {
+	while(items.size()<4) items.push_back("0");
+      }
+      std::cout << " adding zeros.....!!!!????" << std::endl;
+      //exit(1);
+    }
+    
+    if (c==1) {
+      trkObj.AddRes(items);
+    }
+    else if (c==2) {
+      trkObj.AddResErr(items);
+    }
+    else if (c>2 && c<8) {
+      trkObj.AddDerLC(items,c-3);
+    }
+    else if (c>=8) {
+      trkObj.AddDerGL(items);
+    }      
+    
+    //trkObj.print();
+    ++c;
+    
+    
+  }
+
+  std::cout << "Read " << trkObjs.size() << " tracks. Now put them in mille!" << std::endl;
+  
+
+  Mille* m_mille = new Mille(m_outFileName.c_str(), true, false);
+  const int NLC = 5;
+  float derLc[NLC];
+  float * derGl = NULL;
+  int * label = NULL;
+  int NGL;
+
+  for(size_t t=0;t<trkObjs.size();++t) {
+    
+    if(((int)t)%1000==0 || m_debug) {
+      std::cout << "Processing fit " << t << std::endl;
+      //trkObjs[t].print();
+    }
+    
+    //Same nr of global parameters for each direction
+    NGL = trkObjs[t].NGL();
+    derGl = new float[NGL];
+    label = new int[NGL];
+    
+    for(size_t idx=0;idx<3;++idx) {	
+      
+      
+      float  rMeas = trkObjs[t].GetRes(idx);	
+      float sigma = trkObjs[t].GetErr(idx);	
+      trkObjs[t].GetDerLC(derLc,idx);
+      
+      // for(int igl=0;igl!=NGL;++igl) {
+      // 	trkObjs[t].GetDerGL(derGl,igl,idx,label[igl]);
+      // }
+      trkObjs[t].GetDerGL(derGl,label,idx);
+      
+      m_mille->mille(NLC,derLc,NGL,derGl,label,rMeas,sigma);
+      if(m_debug) {
+	
+	std::cout << "(layer="<<trkObjs[t].GetLayer()<<") axis " << idx << ":\n " << rMeas << " " << sigma << std::endl;
+	for(int i=0;i!=NLC;++i) std::cout << " " << derLc[i];
+	std::cout << std::endl;
+	for(int i=0;i!=NGL;++i) std::cout << " " << derGl[i] << "("<<label[i]<<")  ";
+	std::cout << std::endl;	
+	
+      }
+    }
+    
+    //Should be called for each local-fit object -> each track!?
+    m_mille->end();
+    
+    delete [] derGl;
+    delete [] label;
+    
+  }
+    
+    
+  std::cout << "Deleting mille" << std::endl;
+  delete m_mille;
+  std::cout << "After deleting mille" << std::endl;
+    
+
+
+  
+  return;  
+  
+  
+}
+

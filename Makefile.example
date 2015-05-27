@@ -1,0 +1,120 @@
+# ProofAna makefile
+# P. Hansson Adrian, B. Butler
+
+# --- External configuration ----------------------------------
+#include $(ROOTSYS)/test/Makefile.arch
+
+# -------------------------------------------------------------
+# General flags
+# -------------------------------------------------------------
+PACKAGE    = BjetTrigVal
+OUTPUTDIR  = lib
+EXE = BjetTrigValAna
+VALTOOLDIR = ../validation-16.6.3-data11
+
+
+ROOTCFLAGS    = $(shell root-config --cflags)
+ROOTLIBS      = $(shell root-config --libs)
+#ROOTLIBS      = $(shell root-config --libs) -lPyROOT -lCintex
+ROOTGLIBS     = $(shell root-config --glibs)
+ROOTINC       = $(shell root-config --incdir)
+
+CXX           = g++
+CXXFLAGS      = -O -Wall -fPIC
+CXXFLAGS     += $(ROOTCFLAGS)
+LD            = g++
+SOFLAGS       = -shared
+
+GDBFLAGS      = -g
+
+# add utils subdirectories if needed
+INCLUDES   += -I. -I.. -I${TestArea}/InstallArea/include/TriggerMenuNtuple -I${VALTOOLDIR} -I${ROOTINC}
+#INCLUDES   += -I. -I.. -I${TestArea}/InstallArea/include/GoodRunsLists -I${TestArea}/InstallArea/include/PileupReweighting -I${TestArea}/InstallArea/include/TriggerMenuNtuple -I${VALTOOLDIR} -I${ROOTSYS}/include
+
+
+
+# -------------------------------------------------------------
+# ROOT Cint
+# -------------------------------------------------------------
+CINT       = BjetTrigValCint
+LDEFFILE   = lib/LinkDef.h
+CINTFILE   = lib/BjetTrigValCint.C
+CINTOBJ    = $(patsubst %.C,%.o,$(CINTFILE))
+
+# -------------------------------------------------------------
+# Source
+# -------------------------------------------------------------
+# add util subdirectories if needed
+CXXLIST =   BjetTrigClassProp.C BjetTrigValTree.C BjetTrigVal.C TrigBjetTrigDecTree.C TrigBjetTree.C
+#CXXLIST = $(wildcard core/*.cxx) $(wildca	rd analyses/*.cxx) $(wildcard fileevents/*.cxx) $(CINTFILE)
+HLIST   = $(patsubst %.C,%.h,$(CXXLIST)) 
+OLIST   = $(patsubst %.C,%.o,$(CXXLIST)) 
+#DLIST   = $(patsubst %.h,%.d,$(HLIST))
+
+# -------------------------------------------------------------
+# Libraries
+# -------------------------------------------------------------
+
+LIBFILE  = $(OUTPUTDIR)/lib${PACKAGE}.so
+GRLFILE  = GoodRunsLists
+GRLLIB  =  -L${TestArea}/InstallArea/${CMTCONFIG}/lib -l$(GRLFILE)
+TMNFILE  = TriggerMenuNtuple
+TMNLIB  = -L${TestArea}/InstallArea/${CMTCONFIG}/lib -l$(TMNFILE)
+PUFILE   = PileupReweighting
+PULIB   = -L${TestArea}/InstallArea/${CMTCONFIG}/lib -l$(PUFILE)
+VALTOOLFILE = ValidationTool
+VALTOOLLIB = -L${VALTOOLDIR} -l$(VALTOOLFILE)
+
+LIBS = $(ROOTLIBS)  $(TMNLIB) 
+#$(VALTOOLLIB) 
+#$(GRLLIB) $(PULIB)
+
+
+# -------------------------------------------------------------
+# Compilation
+# -------------------------------------------------------------
+
+default: $(EXE)
+
+
+# Implicit rule to compile all classes
+%.o : %.C  
+	@echo "Compiling $< with CXXFLAGS: $(CXXFLAGS)"
+	@$(CXX) $(GDBFLAGS) $(CXXFLAGS) $(INCLUDES) -c $< -o $*.o 
+
+# Rules to make ROOTCINT output file
+#ROOTCINT : $(HLIST) $(LDEFFILE)
+#	@echo "Running rootcint $(HLIST) and linkdef file $(LDEFFILE) "
+#	$(ROOTSYS)/bin/rootcint -f $(CINTFILE) -c -p  $(CXXFLAGS) $(INCLUDES) $(HLIST) $(LDEFFILE)
+
+$(CINTOBJ) : $(HLIST) $(LDEFFILE) 
+#	@echo "Running rootcint for $(HLIST) and linkdef file $(LDEFFILE) "
+	@$(ROOTSYS)/bin/rootcint -f $(CINTFILE) -c -p  $(CXXFLAGS) $(INCLUDES) $(HLIST) $(LDEFFILE)
+	@echo "Compiling $(CINTFILE)"
+	@$(CXX) $(GDBFLAGS) $(CXXFLAGS) $(INCLUDES) -c $(CINTFILE) -o $@
+
+
+# Rule to combine objects into a shared library
+$(LIBFILE): $(OLIST) #$(CINTOBJ)
+	@echo "Making shared library: $@"
+	@rm -f $(LIBFILE)
+	@echo "Linking with $(OLIST) and $(CINTOBJ)"
+	@mkdir -p $(OUTPUTDIR)
+	@$(LD) $(GDBFLAGS) $(CXXFLAGS) $(SOFLAGS) $(EXTRALDFLAGS) $(OLIST) -o $(LIBFILE)  
+
+#@$(LD) $(CXXFLAGS) $(SOFLAGS) $(EXTRALDFLAGS) $(OLIST) $(CINTOBJ) -o $(LIBFILE)  
+
+#Rule to compile and link executable using the shared libraries
+$(EXE): $(LIBFILE)
+	@echo "Compiling executable $(EXE) with LIBS: $(LIBS)..."
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) $(LIBS) -L. $(LIBFILE) -o $(EXE) $(EXE).C 
+
+
+BjetTrigValCint: $(CINTOBJ)
+shlib: solib
+solib: $(LIBFILE)
+
+clean:
+	rm -f *.o *.d */*.o */*.d 
+	rm -f $(LIBFILE)
+	rm -f $(EXE)
