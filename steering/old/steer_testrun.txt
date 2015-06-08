@@ -1,0 +1,71 @@
+Cfiles
+!../gbl/gbl-hps/milleBinaryISN_mc-v7_top.dat
+!../gbl/gbl-hps/milleBinaryISN_1351-v7_top.dat
+!../gbl/gbl-hps/milleBinaryISN_1351-v7_top.dat
+!../gbl/gbl-hps/milleBinaryISN_0.016-v7-2-top_ty_3_4_bot_ty_5_6_top.dat
+!../gbl/hps-gbl/milleBinaryISN_v8-ideal_top.dat
+!../gbl/hps-gbl/milleBinaryISN_v8-100um_yshift_t34_b56_top.dat
+!../gbl/hps-gbl/milleBinaryISN_hps_001351.evio.0.recon.v8.10k_top.dat
+!../gbl/hps-gbl/milleBinaryISN_hps_001351.evio.0.recon.v8.10k_bot.dat
+../gbl/hps-gbl/milleBinaryISN_hps_001351.evio.0.recon.v8.100k_top.dat
+../gbl/hps-gbl/milleBinaryISN_hps_001351.evio.0.recon.v8.100k_bot.dat
+!../gbl/hps-gbl/milleBinaryISN_hps_001351.evio.0.recon.v8-4.10k_bot.dat
+
+!millepede-u3-6-float-1351-v8-10k.res.txt
+!millepede-u3-6-float-then-u7-8float-1351-v8-10k.res.txt
+!millepede-u3-6-float-then-u7-8float-then-u3-6-float-1351-v8-10k.res.txt
+!millepede-u3-6-float-then-u7-8float-then-u3-6-float-then-u1-2-float-1351-v8-10k.res.txt
+!millepede-u3-6-float-then-u7-8float-then-u3-6-float-then-u1-2-float-then-u3-6-float-1351-v8-10k.res.txt
+!millepede-u3-6-float-then-u7-8float-then-u3-6-float-then-u1-2-float-then-u3-6-float-then-u9-10-float-1351-v8-10k.res.txt
+!millepede-u3-6-float-then-u7-8float-then-u3-6-float-then-u1-2-float-then-u3-6-float-then-u9-10-float-then-u7-10-float-then-u3-6-float-1351-v8-10k.res.txt
+!millepede-u3-6-float-then-u7-8float-then-u3-6-float-then-u1-2-float-then-u3-6-float-then-u9-10-float-then-u7-10-float-then-u3-6-float-then-u1-4-float-1351-v8-10k.res.txt
+!millepede-u3-6-float-then-u7-8float-then-u3-6-float-then-u1-2-float-then-u3-6-float-then-u9-10-float-then-u7-10-float-then-u3-6-float-then-u1-4-float-then-u9-10-float-1351-v8-10k.res.txt
+!millepede-u3-6-rv3-6-float-v8-100k.res.txt
+!millepede-u3-6-rv3-6-ru3-6-float-v8-100k.res.txt
+millepede-u3-6-rv3-6-ru3-6-then-u7-8-rv7-8-ru7-8-float-v8-100k.res.txt
+!millepede.res.txt
+!top_include.txt
+!bot_include.txt
+
+!Constraint 0.
+!21301 1.
+
+!Constraint 0.
+!11103 1.
+!11104 -1.
+
+!Constraint 0.
+!11203 1.
+!11204 -1.
+
+!Constraint 0.
+!11303 1.
+!11304 -1.
+
+!Measurement 0. 2.
+!11301 1.
+!11307 -1.
+!Measurement 0. 2.
+!11301 1.
+!11305 -1.
+!Measurement 0. 2.
+!11302 1.
+!11306 -1.
+!Measurement 0. 2.
+!11302 1.
+!11308 -1.
+
+
+
+
+printrecord -1 -1
+
+!chiscut 1000. 200.
+chiscut 30. 6.
+!outlierdownweighting 4
+!method inversion 6 1.
+method diagonalization 6 1.
+
+histprint
+
+end

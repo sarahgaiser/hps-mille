@@ -1,0 +1,24 @@
+Measurement 0. 2.
+21301 -1.
+21309 1.
+Measurement 0. 2.
+21302 -1.
+21310 1.
+!Measurement 0. 3.
+!21303 -1.
+!21307 1.
+!Measurement 0. 3.
+!21304 -1.
+!21308 1.
+Measurement 0. 1.
+21303 1.
+21304 1.
+Measurement 0. 1.
+21305 1.
+21306 1.
+Measurement 0. 1.
+21307 1.
+21308 1.
+Measurement 0. 1.
+21309 1.
+21310 1.

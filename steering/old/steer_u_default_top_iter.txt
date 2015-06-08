@@ -1,0 +1,25 @@
+Cfiles
+!/Users/phansson/work/HPS/software/gbl/gbl-hps/milleBinaryISN_mc-v7_top.dat
+/Users/phansson/work/HPS/software/gbl/gbl-hps/milleBinaryISN_1351-v7_top.dat
+
+!/Users/phansson/work/HPS/software/mille/millepede.txt
+/Users/phansson/work/HPS/software/mille/millepede_2.txt
+
+
+!Constraint 0.
+!21301 1.
+
+!Measurement 0. 2.
+!11301 -1.
+
+
+printrecord -1 -1
+
+!chiscut 1000. 200.
+chiscut 30. 6.
+!outlierdownweighting 4
+method inversion 6 1.
+
+histprint
+
+end

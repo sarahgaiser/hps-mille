@@ -1,0 +1,24 @@
+Cfiles
+!alignMP_merge_top.bin
+../gbl/gbl-hps/milleBinaryISN_mc-v7_top.dat
+
+Parameter
+steering/steer_u_pars_top.txt
+
+!Constraint 0.
+!21301 1.
+
+!Measurement 0. 2.
+!11301 -1.
+
+
+printrecord -1 -1
+
+!chiscut 1000. 200.
+chiscut 30. 6.
+!outlierdownweighting 4
+method inversion 6 1.
+
+histprint
+
+end

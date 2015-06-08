@@ -1,0 +1,146 @@
+Cfiles
+!../gbl/gbl-hps/milleBinaryISN_1351-v7_bot.dat
+../gbl/hps-gbl/milleBinaryISN_v8-100um_yshift_t34_b56_bot.dat
+
+Parameter
+21101     0	   -1
+21102     0        -1
+21103     0        0
+21104     0        0
+21105     0        0
+21106     0        -1
+21107     0        -1
+21108     0        -1
+21109     0        -1
+21110     0        -1
+21201     0        -1
+21202     0        -1
+21203     0        -1
+21204     0        -1
+21205     0        -1
+21206     0        -1
+21207     0        -1
+21208     0        -1
+21209     0        -1
+21210     0        -1
+21301     0        -1
+21302     0        -1
+21303     0        -1
+21304     0        -1
+21305     0        -1
+21306     0        -1
+21307     0        -1
+21308     0        -1
+21309     0        -1
+21310     0        -1
+22101     0        -1
+22102     0        -1
+22103     0        -1
+22104     0        -1
+22105     0        -1
+22106     0        -1
+22107     0        -1
+22108     0        -1
+22109     0        -1
+22110     0        -1
+22201     0        -1
+22202     0        -1
+22203     0        -1
+22204     0        -1
+22205     0        -1
+22206     0        -1
+22207     0        -1
+22208     0        -1
+22209     0        -1
+22210     0        -1
+22301     0        -1
+22302     0        -1
+22303     0        -1
+22304     0        -1
+22305     0        -1
+22306     0        -1
+22307     0        -1
+22308     0        -1
+22309     0        -1
+22310     0        -1
+
+!Constraint 0.
+!21301 1.
+
+!Survey estimate of the uncertainty of the distance in u b/w sensor pairs  
+!Approx. along global y support plate
+!A shift of 0.1mm axial should be balanced by a similar shift in the stereo modulo the stereo angle
+Measurement 0. 0.1
+21101 1.
+21102 -1.
+Measurement 0. 0.1
+21103 1.
+21104 -1.
+Measurement 0. 0.1
+21105 1.
+21106 -1.
+Measurement 0. 0.1
+21107 1.
+21108 -1.
+Measurement 0. 0.1
+21109 1.
+21110 -1.
+
+
+!Survey estimate of the uncertainty of the distance in w b/w sensor pairs  (approx. along support plate)
+!Measurement 0. 1.
+!21301 1.
+!21302 -1.
+!Measurement 0. 1.
+!21303 1.
+!21304 -1.
+!Measurement 0. 1.
+!21305 1.
+!21306 -1.
+!Measurement 0. 1.
+!21307 1.
+!21308 -1.
+!Measurement 0. 1.
+!21309 1.
+!21310 -1.
+
+! Survey estimates of the uncertianty of the distance between pairs in w (approx. along support plate)
+!Measurement 0. 2.
+!21301 1.
+!21303 -1.
+!Measurement 0. 2.
+!21301 1.
+!21305 -1.
+!Measurement 0. 2.
+!21301 1.
+!21307 -1.
+!Measurement 0. 2.
+!21301 1.
+!21309 -1.
+!Measurement 0. 2.
+!21302 1.
+!21304 -1.
+!Measurement 0. 2.
+!21302 1.
+!21306 -1.
+!Measurement 0. 2.
+!21302 1.
+!21308 -1.
+!Measurement 0. 2.
+!21302 1.
+!21310 -1.
+
+
+
+
+printrecord -1 -1
+
+!chiscut 1000. 200.
+chiscut 30. 6.
+!outlierdownweighting 4
+!method inversion 6 1.
+method diagonalization 6 1.
+
+histprint
+
+end
