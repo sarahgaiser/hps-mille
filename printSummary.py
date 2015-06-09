@@ -2,6 +2,8 @@
 
 import argparse, subprocess, sys, os.path, re
 import utils
+sys.path.append('pythonutils')
+import compareRootHists
 from ROOT import TGraph, TCanvas, TH1F, TLegend, gPad
 
 
@@ -16,6 +18,14 @@ def setBinLabels(gr,pars):
     
 
 def plotCmp(filenames):
+    fname = filenames[0]
+    for fnameloop in filenames:
+        if fnameloop==fname:
+            continue
+        compareRootHists.main(fname,fnameloop,None,'truth',None,True)
+
+
+def plotResCmp(filenames):
     # assume 36 parameters possible
     c_sum = TCanvas('c_sum','c_sum',10,10,1000,800)
     c_sumNZ = TCanvas('c_sumNonZero','c_sumNonZero',10,10,1000,800)
@@ -81,7 +91,7 @@ def plotCmp(filenames):
     c_sumNZ.cd()
     leg.Draw()
     c_sum.SaveAs('c_sum_' + savename + '.png')
-    c_sum.SaveAs('c_sumNZ_' + savename + '.png')
+    c_sumNZ.SaveAs('c_sumNZ_' + savename + '.png')
     ans = raw_input('press anything to continue')
     
 
@@ -89,7 +99,9 @@ def main(args):
     print "just GO"
     for f in args.files:
         utils.printResResults(f)
-    plotCmp(args.files)
+    if args.noplots:
+        plotResCmp(args.files)
+    return 0
 
 
     
