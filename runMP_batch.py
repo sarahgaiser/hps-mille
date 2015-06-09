@@ -6,24 +6,48 @@ import sys, os, argparse, re, subprocess
 def getArgs():
   parser = argparse.ArgumentParser(description='Run MP.')
   parser.add_argument('--run',action='store_true',help='Actually run this.')
-  parser.add_argument('--files','-f',nargs='+',help='Input binary files.')
+  parser.add_argument('--files','-f',nargs='+', required=True, help='Input binary files.')
+  parser.add_argument('--switch','-s', type=int, required=True, choices=range(3), help='Switch to change what patter of floating modules.')
   
   args = parser.parse_args();
   print args
   return args
 
 
-def getFloatModules(i):
-    if i==0:
-        return 'L2b_u L3b_u L4b_u L5b_u L2t_u L3t_u L4t_u L5t_u'
-    elif i==1:
-        return 'L1b_u L6b_u L1t_u L6t_u'
-    elif i==2:
-        return 'L1b_u L2b_u L4b_u L1t_u L2t_u L4t_u'
+def getFloatModules(switch, i):
+    if switch==0:
+        if i==0:
+            return 'L2b_u L3b_u L4b_u L5b_u L2t_u L3t_u L4t_u L5t_u'
+        elif i==1:
+            return 'L1b_u L6b_u L1t_u L6t_u'
+        elif i==2:
+            return 'L1b_u L2b_u L4b_u L1t_u L2t_u L4t_u'
+        else:
+            print 'This iter ', i, ' is not allowed'
+            sys.exit(1)
+    elif switch==1:
+        if i==0:
+            return 'L1b_u L3b_u L4b_u L5b_u L1t_u L3t_u L4t_u L5t_u'
+        elif i==1:
+            return 'L2b_u L6b_u L2t_u L6t_u'
+        elif i==2:
+            return 'L1b_u L3b_u L4b_u L1t_u L3t_u L4t_u'
+        else:
+            print 'This iter ', i, ' is not allowed'
+            sys.exit(1)
+    elif switch==2:
+        if i==0:
+            return 'L1b_u L2b_u L3b_u L1t_u L2t_u L3t_u '
+        elif i==1:
+            return 'L4b_u L5b_u L6b_u L4t_u L5t_u L6t_u'
+        elif i==2:
+            return 'L1b_u L3b_u L4b_u L1t_u L3t_u L4t_u'
+        else:
+            print 'This iter ', i, ' is not allowed'
+            sys.exit(1)
     else:
-        print 'This iter ', i, ' is not allowed'
+        print 'This switch ', switch, ' is not allowed'
         sys.exit(1)
-
 
 
 def run(fname):
@@ -33,7 +57,7 @@ def run(fname):
     name = ''
     for i in range(3):
         print 'Iteration ', i
-        modules = getFloatModules(i)
+        modules = getFloatModules(args.switch, i)
         if name != '':
             pars = '-p millepede-' + os.path.splitext(os.path.basename(fname))[0] + '-' + name + '.res'
         else:
