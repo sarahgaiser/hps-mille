@@ -41,3 +41,5 @@ millepede*.log
 millepede*.his
 ./steer*.txt
 *~
+*.png
+
