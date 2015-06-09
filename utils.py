@@ -28,7 +28,10 @@ class Parameter:
         s += ' %s' % self.name
         return s
     def toNiceString(self):
-        s = '%40s %10f %5d' % (self.name, self.val, self.i)
+        error = ''
+        if self.error!=None:
+            error = '%10f' % self.error
+        s = '%40s %10f +- %s %5d' % (self.name, self.val, error, self.i)
         return s
 
 
