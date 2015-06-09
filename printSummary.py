@@ -90,8 +90,8 @@ def plotResCmp(filenames):
     leg.Draw()
     c_sumNZ.cd()
     leg.Draw()
-    c_sum.SaveAs('c_sum_' + savename + '.png')
-    c_sumNZ.SaveAs('c_sumNZ_' + savename + '.png')
+    c_sum.SaveAs('c_sum_' + savename + '.pdf')
+    c_sumNZ.SaveAs('c_sumNZ_' + savename + '.pdf')
     ans = raw_input('press anything to continue')
     
 
