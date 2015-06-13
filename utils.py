@@ -4,6 +4,31 @@ paramMapFile = 'hpsSvtParamMap.txt'
 global paramMap
 paramMap= {}
 
+
+
+class FloatOption:
+    def __init__(self,name):
+        self.name = name
+        self.float = []
+    def add(self, listOfObj):
+        self.float.append(listOfObj)
+    def getName(self):
+        return self.name
+    def get(self,i):
+        return self.float[i]
+    def getNIter(self):
+        return len(self.float)
+    def toString(self):
+        s = self.name + ':\n'
+        i=0
+        s += '%10s  %s\n' % ('Iteration', 'Floating')
+        for v in self.float:
+            s += '%10d  %s\n' % (i,v)
+            i=i+1
+        return s
+
+
+
 class Parameter:
     def __init__(self, i,val,active,error=None):
         self.i = i
@@ -107,6 +132,23 @@ def getModuleNrFromDeName(deName):
         l = m.group(1)
         return int(l)
 
+def isAxial(deName):
+    if 'axial' in deName:
+        return True
+    elif 'stereo' in deName:
+        return False
+    else:
+        print 'this deName doesnt contain axial or stereo ?! ' , deName
+        sys.exit(1)
+
+def isHole(deName):
+    if 'hole' in deName:
+        return True
+    elif 'slot' in deName:
+        return False
+    else:
+        print 'this deName doesnt contain hole or slot?! ' , deName
+        sys.exit(1)
 
 def getDir(param):
     i = int((param%1000)/100.0)
@@ -119,8 +161,17 @@ def getDir(param):
     else:
         print 'cannot extract dir from param ', param
         sys.exit(1)
+
 def getType(param):
-    return int((param%10000)/1000.0)
+    i = int((param%10000)/1000.0)
+    if i==1:
+        return 't'
+    elif i==2:
+        return 'r'
+    else:
+        print 'cannot extract type from param ',param
+        sys.exit(1)
+
 def getHalf(param):
     i = int((param%100000)/10000.0)
     if i==1:
@@ -133,25 +184,49 @@ def getHalf(param):
 
 def getParamsFromModule(module):
     params = []       
-    m = re.search("L([1-6])([tb])_([uvw])", module)
+    m = re.search("L([1-6])([AS]?)([hs]?)([tb])_([tr])([uvw]$)", module)
     if m==None:
-        print 'Wrong module name format ', module, '. Should be e.g. \'L4t_u\''
+        print 'Wrong module name format ', module, '. Should be matched by regexp. \'L[1-6][AS]?[hs]?[tb]_[tr][uvw]\''
         sys.exit(1) 
     else:
-        moduleNr = int(m.group(1))
-        half = m.group(2)
-        d = m.group(3)
-        #print 'find param for ', module, ' ', moduleNr, ' ' , half, ' ' , d
+        print m.groups()
+        layer = int(m.group(1))
+        axialOrStereo = m.group(2)
+        holeOrSlot = m.group(3)
+        half = m.group(4)
+        typ = m.group(5)
+        direction = m.group(6)
+        if holeOrSlot!='' and layer < 4:
+            print 'L1-3 cannot have hole or slot defined ', module
+            sys.exit(1)
+        print module, ': ', layer, ' ', axialOrStereo, ' ', holeOrSlot, ' ', half, ' ', typ, ' ', direction
         for k,v in paramMap.iteritems():
-            loopNr = getModuleNrFromDeName(v)
-            loopType = getType(k)
+            #print 'testing ', k,  ' ', v
+            loopLayer = getModuleNrFromDeName(v)
+            loopTyp = getType(k)
             loopHalf = getHalf(k)
-            #print 'test ', k, ' ', loopNr, ' ', loopType, ' ', loopHalf
-            # only u-dir translation for now
-            if moduleNr == loopNr and getDir(k)==d and loopType==1 and half==loopHalf:
-                params.append(k)
+            loopDirection = getDir(k)
+            if layer == loopLayer and loopDirection==direction and loopTyp==typ and half==loopHalf:
+                #print 'found cand ', axialOrStereo , ' ', isAxial(v)
+                passAx = True
+                if axialOrStereo != '':
+                    if axialOrStereo=='S' and isAxial(v):
+                        passAx = False
+                    elif axialOrStereo=='A' and not isAxial(v):
+                        passAx = False
+                passHole = True
+                if holeOrSlot != '':
+                    if holeOrSlot=='h' and not isHole(v):
+                        passHole = False
+                    elif holeOrSlot=='s' and isHole(v):
+                        passHole = False
+                if passAx and passHole:
+                    #print 'found it'
+                    params.append(k)
         if not bool(params):
-            print 'Cannot find param  for module ', module
+            print 'Cannot find millepede param for \'', module,'\''
+        print 'Found ', len(params),' params from \'', module,'\' :', params
+        #sys.exit(0)
     return params
 
 def getMinimStr(filename):
