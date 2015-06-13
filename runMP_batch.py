@@ -31,12 +31,21 @@ def initListOfFloatOptions():
     opt.add('L2b_tu L3b_tu L4b_tu L5b_tu L2t_tu L3t_tu L4t_tu L5t_tu')
     listOfFloats.append(opt)    
 
-    opt = FloatOption('L2-5_tr')
-    opt.add('L2b_tu L3b_tu L4b_tu L5b_tu L2t_tu L3t_tu L4t_tu L5t_tu')
-    opt.add('L2b_tu L3b_tu L4b_tu L5b_tu L2t_tu L3t_tu L4t_tu L5t_tu')
+    opt = FloatOption('L5_tu')
+    opt.add('L5t_tu L5b_tu')
     listOfFloats.append(opt)    
 
+    opt = FloatOption('L5_tuw')
+    opt.add('L5t_tu L5b_tu L5t_tw L5b_tw')
+    listOfFloats.append(opt)    
 
+    opt = FloatOption('L5_tuw_ruw')
+    opt.add('L5t_tu L5b_tu L5t_tw L5b_tw L5t_ru L5b_ru L5t_rw L5b_rw')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L5_tu_ruw')
+    opt.add('L5t_tu L5b_tu L5t_ru L5b_ru L5t_rw L5b_rw')
+    listOfFloats.append(opt)    
 
     return
 
@@ -47,6 +56,7 @@ def printFloatOptions():
     i=0
     for opt in listOfFloats:
         print 'Option ', i, ': ', opt.toString()
+        i=i+1
     return
 
 def getFloatOption(switch):
