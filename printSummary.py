@@ -13,7 +13,7 @@ def setBinLabels(gr,pars):
     i = 0
     for p in pars:
         b = h.FindBin(i)
-        h.GetXaxis().SetBinLabel(b, p.name)
+        h.GetXaxis().SetBinLabel(b, p.name + '(' + str(p.i) + ')')
         i = i + 1
     
 
@@ -73,8 +73,8 @@ def plotResCmp(filenames):
             h_sum.Draw('APL')
             c_sumNZ.cd()
             h_sumNZ.Draw('APL')
-            h_sum.SetTitle('Millepede corrections per sensor;;local u-translation (mm)')
-            h_sumNZ.SetTitle('Millepede corrections per sensor;;local u-translation (mm)')
+            h_sum.SetTitle('Millepede corrections per sensor;;local translation/rotations (mm/rad)')
+            h_sumNZ.SetTitle('Millepede corrections per sensor;;local translation/rotation (mm/rad)')
             setBinLabels(h_sum,pars)
             setBinLabels(h_sumNZ,parsNZ)
         else:
