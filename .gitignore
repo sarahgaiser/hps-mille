@@ -39,7 +39,7 @@ millepede*.eve
 millepede*.res
 millepede*.log
 millepede*.his
-steer*.txt
+./steer*.txt
 *~
 *.png
 
