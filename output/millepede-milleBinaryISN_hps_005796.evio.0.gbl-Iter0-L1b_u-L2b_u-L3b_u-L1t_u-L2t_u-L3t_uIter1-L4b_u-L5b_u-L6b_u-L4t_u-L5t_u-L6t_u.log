@@ -1,0 +1,270 @@
+  
+ Log-file Millepede II-P                        Tue Jun  9 13:15:11 2015
+                                                rhel6-64b               
+  
+ Text and data files:
+  1  C_binary         ../batch/output/hps_005796.evio.0-nominal500kevents/milleBinaryISN_hps_005796.evio.0.gbl.dat
+  
+ LOOP1: starting
+ LOOP1:         192  labels from txt data stored
+ LOOP1: reading data files
+ LOOP1:         216  is total number NTGB of labels/parameters
+ LOOP1:           0  is number of pre-sigmas
+ LOOP1:          24  is number NVGB of variable parameters
+  
+   NREC =    235191 = number of records
+ MREQEN =        10 = required number of entries
+ LOOP1: ending
+  
+  
+ LOOP2: starting
+ LOOP2: start event reading
+ LOOP2: event reading ended - end of data
+   NTGB =       216 = total number of parameters
+                      (all parameters, appearing in binary files)
+   NVGB =        24 = number of variable parameters
+                      (appearing in fit matrix/vectors)
+   NAGB =        24 = number of fit parameters
+                      (including Lagrange multiplier or reduced)
+ MBANDW =         0 = band width of band matrix
+                      (if =0, no band matrix)
+   NOFF =       276 = max number of off-diagonal elements
+   NCGB =         0 = number of constraints
+  NAGBN =         6 = max number of global parameters in an event
+  NALCN =        27 = max number of local parameters in an event
+  NAEQN =        34 = max number of equations in an event
+ NCACHE =  25000000 = number of words for caching
+                      cache splitting   89.3 %   1.8 %   8.9 %
+  
+  
+ Solution method and matrix-storage mode:
+      METSOL = 2:  diagonalization
+                   with           6  iterations
+      MATSTO = 1:  symmetric matrix, (n*n+n)/2 elements
+ Convergence assumed, if expected dF <   1.000    
+  
+    Cut values of Chi^2/Ndf and Chi2,
+    corresponding to 2 and 3 standard deviations
+    Ndf  Chi^2/Ndf(2)  Chi^2(2)     Chi^2/Ndf(3)  Chi^2(3)
+     1       4.000         4.0          9.000         9.0
+     2       3.090         6.2          5.915        11.8
+     3       2.675         8.0          4.718        14.2
+     4       2.429         9.7          4.063        16.3
+     5       2.263        11.3          3.641        18.2
+     6       2.141        12.8          3.344        20.1
+     7       2.048        14.3          3.121        21.8
+     8       1.974        15.8          2.947        23.6
+     9       1.912        17.2          2.806        25.3
+    10       1.861        18.6          2.690        26.9
+    12       1.779        21.3          2.508        30.1
+    14       1.716        24.0          2.371        33.2
+    16       1.666        26.7          2.263        36.2
+    18       1.625        29.2          2.176        39.2
+    20       1.590        31.8          2.104        42.1
+    25       1.523        38.1          1.967        49.2
+    30       1.474        44.2          1.868        56.0
+    35       1.428        50.0          1.757        61.5
+ LOOP2: ending
+  
+ Chi square cut equiv 3 st.dev applied ...
+  in  first iteration with factor   30.000000    
+  in second iteration with factor   6.0000000    
+  (reduced by sqrt in next iterations)
+  
+ Solution algorithm: 
+ ========================================
+                         solution method:   diagonalization
+            convergence limit at Delta F=   0.10E+01
+            maximum number of iterations=   6
+                        using pre-sigmas:   no
+                          regularization:   no
+    Chi square cut equiv 3 st.dev applied
+       ... in first iteration with factor   0.30E+02
+      ... in second iteration with factor   0.60E+01
+     (reduced by sqrt in next iterations)
+ Checking feasibility of parameters:
+    parameters are feasible  (i.e. satisfy constraints)
+  
+  === local fits have bordered band matrix structure ===
+  NBNDR =    235191 = number of records
+  NBDRX =         1 = max border size
+  NBNDX =         4 = max band width
+  
+ The first (largest) eigenvalues ...
+  0.123473E+10  0.905855E+09  0.577501E+09  0.413262E+09  0.178386E+09
+  0.140016E+09  0.715696E+08  0.565090E+08  0.130975E+08  0.795359E+07
+  0.539681E+07  0.462443E+07  0.260321E+07  0.161025E+07  0.152016E+07
+  0.102084E+07  0.629020E+06  0.444959E+06  0.336072E+06  0.225625E+06
+  
+ The last eigenvalues ... up to          24
+  0.178386E+09  0.140016E+09  0.715696E+08  0.565090E+08  0.130975E+08
+  0.795359E+07  0.539681E+07  0.462443E+07  0.260321E+07  0.161025E+07
+  0.152016E+07  0.102084E+07  0.629020E+06  0.444959E+06  0.336072E+06
+  0.225625E+06  0.892492E+05  0.607634E+05  0.192727E+05  0.137449E+05
+  
+ The eigenvalues from          25  to          24
+
+  
+ Log10 + 3 of           24  eigenvalues in decreasing order
+ (for Eigenvalue < 0.001 the value 0.0 is shown)
+   12.1   12.0   11.8   11.6   11.3   11.1   10.9   10.8   10.1    9.9
+    9.7    9.7    9.4    9.2    9.2    9.0    8.8    8.6    8.5    8.4
+    8.0    7.8    7.3    7.1
+  
+          24  significances: insignificant if compatible with  N(0,1)
+   57.7   44.6   37.2   39.4    9.5  261.2    9.0   35.8   23.9   69.0
+    9.7    7.9   25.2   90.2    0.3    7.7   14.9    9.6   16.6   28.6
+   18.9   19.1    0.9   20.4
+  
+ it fc   fcn_value dfcn_exp  slpr costh  iit st ls  step cutf rejects hmmsec FMS
+ -- -- ----------- --------  ---- -----  --- -- -- ----- ---- ------- ------ ---
+  0  1 0.58050E+07                                       30.0     376 0 0  7 FMS
+  
+ PTLINE: line-search method based on slopes with sufficient slope-decrease
+ PTLDEF: slope ratio limit=  0.50000000000000000     
+ PTLDEF: maximum step =   10.000000000000000     
+ PTLDEF:           2  <= nr of calls <=          10
+  i      x              F(x)         F'(X)          minimum     F'(X)
+  0    0.000000 L     0.00000      -94792.5        0.000000     ratio
+  1    1.000000 *R   -718744.       457.278        0.995199     0.005
+ PTLINE: INFO=1  convergence reached
+  
+  1  2 0.43675E+07 0.95E+05 0.005 0.101    0  0  1 1.000  6.0    9056 0 0  4 F  
+                                                                      0 0  0   S
+  2  3 0.35034E+07 0.32E+04 0.232 0.091    0  0 -1 1.000  2.4   17962 0 0  4 F  
+  
+ PTLINE: line-search method based on slopes with sufficient slope-decrease
+ PTLDEF: slope ratio limit=  0.50000000000000000     
+ PTLDEF: maximum step =   10.000000000000000     
+ PTLDEF:           3  <= nr of calls <=          10
+  i      x              F(x)         F'(X)          minimum     F'(X)
+  0    0.000000       0.00000      -3222.27        0.000000     ratio
+  1    1.000000 L    -432028.      -748.498        1.302574     0.232
+  2    1.302574 *R   -432121.       143.817        1.253807     0.045
+ PTLINE: INFO=1  convergence reached
+  
+     4 0.35032E+07          0.045                1 1.303        17961 0 0  4 F  
+                                                                      0 0  0   S
+  3  5 0.31181E+07 0.15E+03 0.470 0.037    0  0 -1 1.000  1.6   27497 0 0  4 F  
+  
+ PTLINE: line-search method based on slopes with sufficient slope-decrease
+ PTLDEF: slope ratio limit=  0.50000000000000000     
+ PTLDEF: maximum step =   10.000000000000000     
+ PTLDEF:           3  <= nr of calls <=          10
+  i      x              F(x)         F'(X)          minimum     F'(X)
+  0    0.000000       0.00000      -152.122        0.000000     ratio
+  1    1.000000 L    -192561.      -71.5083        1.887045     0.470
+  2    1.887045 *R   -192573.       44.6986        1.545846     0.294
+ PTLINE: INFO=1  convergence reached
+  
+     6 0.31181E+07          0.294                1 1.887        27507 0 0  4 F  
+                                                                      0 0  0   S
+  4  7 0.27067E+07 0.49E+02 0.563 0.034    0  0 -1 1.000  1.0   48251 0 0  4 F  
+  
+ PTLINE: line-search method based on slopes with sufficient slope-decrease
+ PTLDEF: slope ratio limit=  0.50000000000000000     
+ PTLDEF: maximum step =   10.000000000000000     
+ PTLDEF:           3  <= nr of calls <=          10
+  i      x              F(x)         F'(X)          minimum     F'(X)
+  0    0.000000       0.00000      -49.1370        0.000000     ratio
+  1    1.000000 L    -205686.      -27.6557        2.287432     0.563
+  2    2.287432 *R   -205693.       16.4851        1.806620     0.335
+ PTLINE: INFO=1  convergence reached
+  
+     8 0.27067E+07          0.335                1 2.287        48249 0 0  4 F  
+                                                                      0 0  0   S
+  5  9 0.27066E+07 0.12E+03 0.274 0.058    0  0 -1 1.000  1.0   48277 0 0  4 F  
+  
+ PTLINE: line-search method based on slopes with sufficient slope-decrease
+ PTLDEF: slope ratio limit=  0.50000000000000000     
+ PTLDEF: maximum step =   10.000000000000000     
+ PTLDEF:           3  <= nr of calls <=          10
+  i      x              F(x)         F'(X)          minimum     F'(X)
+  0    0.000000       0.00000      -120.413        0.000000     ratio
+  1    1.000000      -77.2422      -33.0455        1.378235     0.274
+  2    1.378235 L*   -83.6343     -0.315754        1.381884     0.003
+ PTLINE: INFO=1  convergence reached
+  
+    10 0.27066E+07          0.003                1 1.378        48273 0 0  4 F  
+                                                                      0 0  0   S
+  6 11 0.27065E+07 0.28E+00 0.256 0.029    0  0 -1 1.000  1.0   48276 0 0  4 F  
+  
+ PTLINE: line-search method based on slopes with sufficient slope-decrease
+ PTLDEF: slope ratio limit=  0.50000000000000000     
+ PTLDEF: maximum step =   10.000000000000000     
+ PTLDEF:           3  <= nr of calls <=          10
+  i      x              F(x)         F'(X)          minimum     F'(X)
+  0    0.000000       0.00000     -0.284080        0.000000     ratio
+  1    1.000000     -0.181326     -0.728465E-01    1.344862     0.256
+  2    1.344862 L*  -0.189497     -0.219728E-01    1.493812     0.077
+ PTLINE: INFO=1  convergence reached
+  
+    12 0.27065E+07          0.077                1 1.345        48273 0 0  4 F  
+  
+ Sum(Chi^2)/Sum(Ndf) =   2706549.9151348341     
+                     / (     1519541 -          24 )
+                     =   1.7811909410258879     
+  
+  
+ Record      233513  has largest residual:   6.2669969    
+ Record      162185  has largest Chi^2/Ndf:   218.64175    
+  
+ In total 2 +          12  loops through the data files
+ Times [in sec] for     text processing       0.021
+                                  LOOP1       0.607
+                                  LOOP2       0.706
+   func. value                                4.294 * 11.
+   func. value, global matrix, solution       7.051 *  1.
+                           new solution       0.000 *  5.
+
+ Total time =          56  seconds =           0  h           0  m          56  seconds
+ end                                            Tue Jun  9 13:16:07 2015
+  
+      Peak dynamic memory allocation:    0.100627 GB
+  
+ Data rejected in last iteration:   
+               0  (rank deficit/NaN)            0  (Ndf=0)             30  (huge)          48243  (large)
+  
+  
+             Explanation of iteration table
+             ==============================
+       it =  iteration number. Global parameters are improved for it > 0.
+             First function evaluation is called iteraton 0.
+       fc =  number of function evaluations.
+fcn_value =  value of 2 x Likelihood function (LF).
+             The final value is the chi^2 value of the fit and should
+             be about equal to the NDF (see below).
+ dfcn_exp =  expected reduction of the value of the Likelihood function (LF)
+     slpr =  ratio of the actual slope to inital slope.
+    costh =  cosine of angle between search direction and -gradient
+      iit =  number of internal iterations in GMRES/MINRES algorithmus
+       st =  stop code of GMRES/MINRES algorithmus
+             < 0:   rhs is very special, with beta2 = 0
+             = 0:   rhs b = 0, i.e. the exact solution is  x = 0
+             = 1    requested accuracy achieved, as determined by rtol
+             = 2    reasonable accuracy achieved, given eps
+             = 3    x has converged to an eigenvector
+             = 4    matrix ill-conditioned (Acond has exceeded 0.1/eps)
+             = 5    the iteration limit was reached
+             = 6    Matrix x vector does not define a symmetric matrix
+             = 7    Preconditioner does not define a symmetric matrix
+       ls =  line search info
+             < 0    recalculate function
+             = 0:   N or STP lt 0 or step not descending
+             = 1:   Linesearch convergence conditions reached
+             = 2:   interval of uncertainty at lower limit
+             = 3:   max nr of line search calls reached
+             = 4:   step at the lower bound
+             = 5:   step at the upper bound
+             = 6:   rounding error limitation
+     step =  the factor for the Newton step during the line search. Usually
+             a value of 1 gives a sufficient reduction of the LF. Oherwise
+             other step values are tried.
+     cutf =  cut factor. Local fits are rejected, if their chi^2 value
+             is larger than the 3-sigma chi^2 value times the cut factor.
+             A cut factor of 1 is used finally, but initially a larger
+             factor may be used. A value of 0.0 means no cut.
+  rejects =  total number of rejected local fits.
+   hmmsec =  the time in hours (h), minutes (mm) and seconds.
+      FMS =  calculation of Function value, Matrix, Solution.
+  
