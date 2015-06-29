@@ -29,8 +29,8 @@ def plotResCmp(filenames):
     # assume 36 parameters possible
     c_sum = TCanvas('c_sum','c_sum',10,10,1000,800)
     c_sumNZ = TCanvas('c_sumNonZero','c_sumNonZero',10,10,1000,800)
-    c_sum.SetBottomMargin(0.4)
-    c_sumNZ.SetBottomMargin(0.4)
+    c_sum.SetBottomMargin(0.45)
+    c_sumNZ.SetBottomMargin(0.45)
     vals = {}
     valsNZ = {}
     icolor = 1
@@ -40,6 +40,9 @@ def plotResCmp(filenames):
     leg.SetFillColor(0)
     savename = ''
     for filename in filenames:
+        if re.match(args.reject,filename) != None:
+            print 'skip file ', filename, ' base on pattern ', args.reject
+            continue
         if savename=='':
             savename = os.path.splitext(os.path.basename(filename))[0]
         run = utils.getRunNr(filename)
@@ -98,8 +101,12 @@ def plotResCmp(filenames):
 def main(args):
     print "just GO"
     for f in args.files:
+        if args.reject != None:
+            if re.match(args.reject,f) != None:
+                print 'skip file ', f, ' base on pattern ', args.reject
+                continue
         utils.printResResults(f)
-    if args.noplots:
+    if not args.noplots:
         plotResCmp(args.files)
     return 0
 
@@ -108,7 +115,8 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='MP summary script')
     parser.add_argument('-f','--files', nargs='+', required=True, help='Res files.')
-    parser.add_argument('-n','--noplots', action='store_false', help='Dont plot anyting.')
+    parser.add_argument('-n','--noplots', action='store_true', help='Dont plot anyting.')
+    parser.add_argument('-r','--reject', help='Pattern to reject input files.')
     args = parser.parse_args()
     print args
     main(args)
