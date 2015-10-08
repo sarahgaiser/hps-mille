@@ -47,6 +47,7 @@ def plotResCmp(filenames):
     vals = {}
     valsNZ = {}
     icolor = 1
+    istyle = 20
     leg = TLegend(0.78,0.6,0.9,0.87)
     leg.SetBorderSize(0)
     leg.SetFillStyle(0)
@@ -71,8 +72,8 @@ def plotResCmp(filenames):
         h_sum = TGraph()
         h_sumNZ = TGraph()
         i = 0
-        maxVal =  0.09
-        minVal = -0.09
+        maxVal =  0.11
+        minVal = -0.11
         for p in pars:
             #print binmap[p.name], ' ', p.val
             h_sum.SetPoint(i,i,p.val)
@@ -83,11 +84,11 @@ def plotResCmp(filenames):
         for p in parsNZ:
             h_sumNZ.SetPoint(i,i,p.val)
             i = i + 1
-        h_sum.SetMarkerStyle(20)
+        h_sum.SetMarkerStyle(istyle)
         h_sum.SetMarkerSize(1.0)
         h_sum.SetLineColor(icolor)
         h_sum.SetMarkerColor(icolor)
-        h_sumNZ.SetMarkerStyle(20)
+        h_sumNZ.SetMarkerStyle(istyle)
         h_sumNZ.SetMarkerSize(1.0)
         h_sumNZ.SetLineColor(icolor)
         h_sumNZ.SetMarkerColor(icolor)
@@ -114,6 +115,9 @@ def plotResCmp(filenames):
             h_sumNZ.Draw('PL,same')
 
         icolor=icolor+1
+        if icolor>7:
+            icolor = 1
+            istyle = 21
         leg.AddEntry(h_sum,'%s'%run,'LP')        
         vals[filename] = h_sum
         valsNZ[filename] = h_sumNZ

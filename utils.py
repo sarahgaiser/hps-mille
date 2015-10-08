@@ -30,12 +30,13 @@ class FloatOption:
 
 
 class Parameter:
-    def __init__(self, i,val,active,error=None):
+    def __init__(self, i,val,active,error=None,change=None):
         self.i = i
         self.name = getSensorName(i)
         self.val = val
         self.active = active
-        self.error=error
+        self.error = error
+        self.change = change
     @classmethod
     def fromstr(cls,s):
         i = int(s.split()[0])
@@ -43,20 +44,27 @@ class Parameter:
         active = float(s.split()[2])
         if(len(s.split())>4):
             error = float(s.split()[4])
+            change = float(s.split()[3])
         else:
             error = None
-        return cls(i,val,active,error)
+            change = None
+        return cls(i,val,active,error,change)
     def toString(self):
         s = '%5d %10f %10f' % (self.i, self.val, self.active)
         if self.error!=None:
             s += '    %f' % self.error
         s += ' %s' % self.name
+        if self.change!=None:
+            s += '   (change %f)' % self.change
         return s
     def toNiceString(self):
         error = ''
         if self.error!=None:
             error = '%10f' % self.error
-        s = '%40s %10f +- %s %5d' % (self.name, self.val, error, self.i)
+        change = ''
+        if self.change!=None:
+            change = ' (change %10f)' % self.change
+        s = '%40s %10f +- %s %5d %s' % (self.name, self.val, error, self.i, change)
         return s
 
 

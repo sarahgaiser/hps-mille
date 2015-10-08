@@ -20,6 +20,24 @@ def getArgs():
 
 
 def initListOfFloatOptions():
+
+
+    opt = FloatOption('L2345_tu_singleLayerIter')
+    opt.add('L2b_tu L2t_tu')
+    opt.add('L3b_tu L3t_tu')
+    opt.add('L4b_tu L4t_tu')
+    opt.add('L5b_tu L5t_tu')
+    listOfFloats.append(opt)
+
+    opt = FloatOption('L2345_tu_rw_singleLayerIter_L234_L345_tu_rw')
+    opt.add('L2b_tu L2t_tu L2b_rw L2t_rw')
+    opt.add('L3b_tu L3t_tu L3b_rw L3t_rw')
+    opt.add('L4b_tu L4t_tu L4b_rw L4t_rw')
+    opt.add('L5b_tu L5t_tu L5b_rw L5t_rw')
+    opt.add('L2t_tu L2b_tu L2t_rw L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw')
+    opt.add('L3t_tu L3b_tu L3t_rw L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw')
+    listOfFloats.append(opt)
+
     opt = FloatOption('L5u_L2u_2iterseach')
     opt.add('L5b_u L5t_u')
     opt.add('L2b_u L2t_u')
@@ -28,6 +46,10 @@ def initListOfFloatOptions():
     listOfFloats.append(opt)
 
     opt = FloatOption('L2-5_tu')
+    opt.add('L2b_tu L3b_tu L4b_tu L5b_tu L2t_tu L3t_tu L4t_tu L5t_tu')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L234_tu_rw')
     opt.add('L2b_tu L3b_tu L4b_tu L5b_tu L2t_tu L3t_tu L4t_tu L5t_tu')
     listOfFloats.append(opt)    
 
@@ -46,6 +68,97 @@ def initListOfFloatOptions():
     opt = FloatOption('L5_tu_ruw')
     opt.add('L5t_tu L5b_tu L5t_ru L5b_ru L5t_rw L5b_rw')
     listOfFloats.append(opt)    
+
+    opt = FloatOption('L1-3_tu_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L4-6_tu_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L123_L456_L235_L345_L123_L456_tu_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    opt.add('L2t_tu L2b_tu L2t_rw L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw')
+    opt.add('L3t_tu L3b_tu L3t_rw L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L123_L234_L345_L123_L456_L123_tu_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    opt.add('L2t_tu L2b_tu L2t_rw L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw')
+    opt.add('L3t_tu L3b_tu L3t_rw L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L56_L4_L56_L4_L56_L4_tu_rw')
+    opt.add('L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw')
+    opt.add('L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw')
+    opt.add('L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L456_L123_tu_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L123_L456_tu_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L123_L456_L234_tu_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    opt.add('L2t_tu L2b_tu L2t_rw L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L456_L123_L234_tu_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    opt.add('L2t_tu L2b_tu L2t_rw L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L123_L456_L234_L345_tu_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    opt.add('L2t_tu L2b_tu L2t_rw L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw')
+    opt.add('L3t_tu L3b_tu L3t_rw L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L456_L123_L234_L345_tu_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    opt.add('L2t_tu L2b_tu L2t_rw L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw')
+    opt.add('L3t_tu L3b_tu L3t_rw L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L123_L456_L234_L345_L123_L456_tu_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    opt.add('L2t_tu L2b_tu L2t_rw L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw')
+    opt.add('L3t_tu L3b_tu L3t_rw L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    listOfFloats.append(opt)    
+
+    opt = FloatOption('L456_L123_L234_L345_L123_L456_tu_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    opt.add('L2t_tu L2b_tu L2t_rw L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw')
+    opt.add('L3t_tu L3b_tu L3t_rw L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw')
+    opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
+    opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+    listOfFloats.append(opt)    
+
 
     return
 
@@ -86,8 +199,8 @@ def run(fname, opt):
         else:
             pars = ''
         name += 'Iter' + str(i) 
-        for m in modules.split():
-            name += '-' + m
+        #for m in modules.split():
+        #    name += '-' + m
         
         cmd = 'python runMP.py -i ' + fname + ' -M ' + modules + ' ' + pars + ' --name ' + name
         print cmd
