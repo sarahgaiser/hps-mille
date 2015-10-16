@@ -38,12 +38,12 @@ def plotCmp(filenames):
         compareRootHists.main(fname,fnameloop,None,'truth',None,True)
 
 
-def plotResCmp(filenames):
-    # assume 36 parameters possible
-    c_sum = TCanvas('c_sum','c_sum',10,10,1000,800)
-    c_sumNZ = TCanvas('c_sumNonZero','c_sumNonZero',10,10,1000,800)
-    c_sum.SetBottomMargin(0.45)
-    c_sumNZ.SetBottomMargin(0.45)
+def plotResCmp(filenames, legendlist, half,t,d,uflip):
+    # assume 18 parameters possible
+    c_sum = TCanvas('c_sum','c_sum',10,10,1500,1000)
+    c_sumNZ = TCanvas('c_sumNonZero','c_sumNonZero',10,10,1500,1000)
+    c_sum.SetBottomMargin(0.4)
+    c_sumNZ.SetBottomMargin(0.4)
     vals = {}
     valsNZ = {}
     icolor = 1
@@ -55,6 +55,7 @@ def plotResCmp(filenames):
     savename = ''
     h_sum_template = None
     h_sumNZ_template = None
+    count = 0
     for filename in filenames:
         if args.reject != None:
             if re.match(args.reject,filename) != None:
@@ -65,24 +66,45 @@ def plotResCmp(filenames):
         run = utils.getRunNr(filename)
         print run
         savename += '-' + str(run)
-        pars = utils.getResResults(filename,False)
-        parsNZ = utils.getResResults(filename,True)
+        parsTmp = utils.getResResults(filename,False)
+        parsNZTmp = utils.getResResults(filename,True)
+        pars = []
+        parsNZ = []
+        for p in parsTmp:            
+            sel = True
+            if (half == 'top' and not utils.getHalf(p.i) == 't'): sel = False
+            if (not half == 'top' and not utils.getHalf(p.i) == 'b'): sel = False
+            if t != '' and utils.getType(p.i) != t: sel = False
+            if d != '' and utils.getDir(p.i) != d: sel = False
+            if sel:
+                print 'adding ', p.toString()
+                pars.append(p)
+        for p in parsNZTmp:
+            if (half == 'top' and utils.getHalf(p.i) == 't') or (not half == 'top' and utils.getHalf(p.i) == 'b'):
+                parsNZ.append(p)
+        
+        pars = sorted(pars,utils.cmpSensors)
+        parsNZ = sorted(parsNZ,utils.cmpSensors)
         print 'Got ', len(pars), ' for ', filename, 
         print 'Got ', len(parsNZ), ' nonzero for ', filename
         h_sum = TGraph()
         h_sumNZ = TGraph()
         i = 0
-        maxVal =  0.11
-        minVal = -0.11
+        maxVal =  0.05
+        minVal = -0.05
         for p in pars:
-            #print binmap[p.name], ' ', p.val
-            h_sum.SetPoint(i,i,p.val)
+            print i, ' ', p.i, p.val
+            if uflip and t == 't' and d == 'u' and not utils.isAxial(p.name): v = -1.0*p.val
+            else: v = p.val
+            h_sum.SetPoint(i,i,v)
             i = i + 1
             #if p.val > maxVal: maxVal = p.val
             #if p.val < minVal: minVal = p.val
         i = 0
         for p in parsNZ:
-            h_sumNZ.SetPoint(i,i,p.val)
+            if uflip and t == 't' and d == 'u' and not utils.isAxial(p.name): v = -1.0*p.val
+            else: v = p.val
+            h_sumNZ.SetPoint(i,i,v)
             i = i + 1
         h_sum.SetMarkerStyle(istyle)
         h_sum.SetMarkerSize(1.0)
@@ -94,13 +116,13 @@ def plotResCmp(filenames):
         h_sumNZ.SetMarkerColor(icolor)
         if len(vals)==0:
             c_sum.cd()
-            h_sum_template = TH2F('h_'+h_sum.GetName(),'h_'+h_sum.GetName(),h_sum.GetN(),0,h_sum.GetN(),10,minVal,maxVal)
+            h_sum_template = TH2F('h_'+h_sum.GetName()+'_'+half,'h_'+h_sum.GetName()+'_'+half,h_sum.GetN(),0,h_sum.GetN(),10,minVal,maxVal)
             h_sum_template.SetStats(False)
             h_sum_template.Draw('hist')
             h_sum_template.SetTitle('Millepede corrections per sensor;;local translation/rotations (mm/rad)')
             h_sum.Draw('PL,same')
             c_sumNZ.cd()
-            h_sumNZ_template = TH2F('h_'+h_sumNZ.GetName(),'h_'+h_sumNZ.GetName(),h_sumNZ.GetN(),0,h_sumNZ.GetN(),10,h_sumNZ.GetMinimum(),h_sumNZ.GetMaximum())
+            h_sumNZ_template = TH2F('h_'+h_sumNZ.GetName()+'_'+half,'h_'+h_sumNZ.GetName()+'_'+half,h_sumNZ.GetN(),0,h_sumNZ.GetN(),10,h_sumNZ.GetMinimum(),h_sumNZ.GetMaximum())
             h_sumNZ_template.SetStats(False)
             h_sumNZ_template.Draw('hist')
             h_sumNZ.Draw('PL,same')
@@ -118,16 +140,21 @@ def plotResCmp(filenames):
         if icolor>7:
             icolor = 1
             istyle = 21
-        leg.AddEntry(h_sum,'%s'%run,'LP')        
+        if legendlist != None and len(legendlist) != 0: leg.AddEntry(h_sum,legendlist[count],'LP')        
+        else:  leg.AddEntry(h_sum,'%s'%run,'LP')        
         vals[filename] = h_sum
         valsNZ[filename] = h_sumNZ
+        count = count + 1
     c_sum.cd()
     c_sum.Update()
     leg.Draw()
     c_sumNZ.cd()
     leg.Draw()
-    c_sum.SaveAs('c_sum_' + savename + '.pdf')
-    c_sumNZ.SaveAs('c_sumNZ_' + savename + '.pdf')
+    savename += '_' + half
+    if t != '': savename += '_' + t 
+    if d != '': savename += '_' + d 
+    c_sum.SaveAs('c_sum_' + savename + '.png')
+    c_sumNZ.SaveAs('c_sumNZ_' + savename + '.png')
     ans = raw_input('press anything to continue')
     
 
@@ -140,7 +167,12 @@ def main(args):
                 continue
         utils.printResResults(f)
     if not args.noplots:
-        plotResCmp(args.files)
+        if args.legend != None:
+            if len(args.legend) != len(args.files):
+                print '# legend rows and files differ ', len(args.legend), ' ', len(args.files)
+                sys.exit(1)
+        plotResCmp(args.files, args.legend, 'top',args.type,args.direction,args.uflip)
+        plotResCmp(args.files, args.legend, 'bot',args.type,args.direction,args.uflip)
     return 0
 
 
@@ -150,6 +182,10 @@ if __name__ == "__main__":
     parser.add_argument('-f','--files', nargs='+', required=True, help='Res files.')
     parser.add_argument('-n','--noplots', action='store_true', help='Dont plot anyting.')
     parser.add_argument('-r','--reject', help='Pattern to reject input files.')
+    parser.add_argument('-l','--legend', nargs='+', help='Optional legend separated by whitespace.')
+    parser.add_argument('-t','--type', help='translation t or rotation r')
+    parser.add_argument('-d','--direction', help='u,v or w')
+    parser.add_argument('-u','--uflip', action='store_true', help='flip u translations')
     args = parser.parse_args()
     print args
     main(args)

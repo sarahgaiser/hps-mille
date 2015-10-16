@@ -1,4 +1,28 @@
 MilleParameter                              Sensor          half   trans./rot.     Direction   MP layer ID
+         21199         module_L0b_halfmodule_axial             2             1             1             99
+         21299         module_L0b_halfmodule_axial             2             1             2             99
+         21399         module_L0b_halfmodule_axial             2             1             3             99
+         22199         module_L0b_halfmodule_axial             2             2             1             99
+         22299         module_L0b_halfmodule_axial             2             2             2             99
+         22399         module_L0b_halfmodule_axial             2             2             3             99
+         21198        module_L0b_halfmodule_stereo             2             1             1             98
+         21298        module_L0b_halfmodule_stereo             2             1             2             98
+         21398        module_L0b_halfmodule_stereo             2             1             3             98
+         22198        module_L0b_halfmodule_stereo             2             2             1             98
+         22298        module_L0b_halfmodule_stereo             2             2             2             98
+         22398        module_L0b_halfmodule_stereo             2             2             3             98
+         11199         module_L0t_halfmodule_axial             1             1             1             99
+         11299         module_L0t_halfmodule_axial             1             1             2             99
+         11399         module_L0t_halfmodule_axial             1             1             3             99
+         12199         module_L0t_halfmodule_axial             1             2             1             99
+         12299         module_L0t_halfmodule_axial             1             2             2             99
+         12399         module_L0t_halfmodule_axial             1             2             3             99
+         11198        module_L0t_halfmodule_stereo             1             1             1             98
+         11298        module_L0t_halfmodule_stereo             1             1             2             98
+         11398        module_L0t_halfmodule_stereo             1             1             3             98
+         12198        module_L0t_halfmodule_stereo             1             2             1             98
+         12298        module_L0t_halfmodule_stereo             1             2             2             98
+         12398        module_L0t_halfmodule_stereo             1             2             3             98
          21102         module_L1b_halfmodule_axial             2             1             1             2
          21202         module_L1b_halfmodule_axial             2             1             2             2
          21302         module_L1b_halfmodule_axial             2             1             3             2

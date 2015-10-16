@@ -1,16 +1,21 @@
 #!/usr/bin/python
 import argparse, subprocess, sys, os.path, re
-from utils import Parameter, printResults, getParamsFromModule,getMinimStr
+from utils import Parameter, printResults, getParamsFromModule,getMinimStr, beamspotAxialId, beamspotStereoId,paramMap
+import buildSteering
 
 pedeBin = 'MillepedeII/pede'
 
 
-def getDefaultParams():
+def getDefaultParams(beamspot=False):
     pars = []
     for h in range(1,3):
         for t in range(1,3):
             for d in range(1,4):
-                for sensor in range(1,19):
+                r = range(1,19)
+                if beamspot:
+                    r.append(beamspotStereoId)
+                    r.append(beamspotAxialId)
+                for sensor in r:
                     if sensor<10:
                         s = "0" + str(sensor)
                     else:
@@ -71,7 +76,7 @@ def updateParams(pars,otherparms,resetActive=True):
     return parsnew
 
 
-def buildSteerFile(name,inputfile,pars,minimStr):
+def buildSteerFile(name,inputfile,pars,minimStr,surveyConstraints=False,beamspotConstraints=False):
     try:
         f = open(name,'w')
     except IOError:
@@ -84,6 +89,14 @@ def buildSteerFile(name,inputfile,pars,minimStr):
         f.write("\nParameter\n")
         for p in pars:
             f.write(p.toString() + "\n")
+
+        if surveyConstraints:
+            f.write(buildSteering.getSurveyMeasurements(paramMap))
+            f.write("\n\n")
+
+        if beamspotConstraints:
+            f.write(buildSteering.getBeamspotConstraints(paramMap))
+            f.write("\n\n")
         
         f.write("\n\n")
         f.write(minimStr)
@@ -118,7 +131,7 @@ def main(args):
     print "just GO"
 
     # initialize all the parameters into a list
-    pars = getDefaultParams()
+    pars = getDefaultParams(args.beamspot)
     print 'Found ', len(pars), 'default parameters'
     if args.debug:
         for p in pars:
@@ -171,7 +184,7 @@ def main(args):
 
     # build the actual steering file
     name = "steer.txt"
-    ok = buildSteerFile(name,args.inputfile,pars,minimStr)
+    ok = buildSteerFile(name,args.inputfile,pars,minimStr,args.SC,args.BSC)
     if not ok:
         print "Couldn't build steering file"
         sys.exit(1)
@@ -196,6 +209,9 @@ if __name__ == "__main__":
     parser.add_argument('-m','--minimization', default='steering/steer_minimization_template.txt', help='Default minimization settings')
     parser.add_argument('-d','--debug', action='store_true', help='Debug flag')
     parser.add_argument('-n','--name', help='If given output files will get tagged by this name.')
+    parser.add_argument('-b','--beamspot', action='store_true',help='Beamspot is included in the fit')
+    parser.add_argument('--SC', action='store_true',help='Survey constraint')
+    parser.add_argument('--BSC', action='store_true',help='Beamspot constraint')
     args = parser.parse_args()
     print args
 

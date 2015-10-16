@@ -4,15 +4,21 @@ import sys, os, argparse, re, subprocess
 from utils import FloatOption
 
 listOfFloats = []
+beamspot = False
+beamspotConstraint = False
+surveyConstraint = False
 
 
 def getArgs():
   parser = argparse.ArgumentParser(description='Run MP.')
   parser.add_argument('--run',action='store_true',help='Actually run this.')
   parser.add_argument('--files','-f',nargs='+', required=True, help='Input binary files.')
-  parser.add_argument('--switch','-s', type=int, help='Switch to change what patter of floating modules.')
   parser.add_argument('--listoptions','-l', action='store_true', help='List available defined floating options.')
-  
+  parser.add_argument('--switch','-s', type=int, help='Switch to change what patter of floating modules.')
+  parser.add_argument('-b','--beamspot', action='store_true',help='Beamspot is included in the fit')
+  parser.add_argument('--SC', action='store_true',help='Survey constraint')
+  parser.add_argument('--BSC', action='store_true',help='Beamspot constraint')
+
   args = parser.parse_args();
   print args
   return args
@@ -22,11 +28,42 @@ def getArgs():
 def initListOfFloatOptions():
 
 
+    opt = FloatOption('L0_L01_L12_L23_L01_L12_L34_L45_L01_tu')
+    opt.add('L0b_tu L0t_tu')
+    opt.add('L0b_tu L0t_tu L1b_tu L1t_tu')
+    opt.add('L1b_tu L1t_tu L2b_tu L2t_tu')
+    opt.add('L2b_tu L2t_tu L3b_tu L3t_tu')
+    opt.add('L0b_tu L0t_tu L1b_tu L1t_tu')
+    opt.add('L1b_tu L1t_tu L2b_tu L2t_tu')
+    opt.add('L3b_tu L3t_tu L4b_tu L4t_tu')
+    opt.add('L4b_tu L4t_tu L5b_tu L5t_tu')
+    opt.add('L0b_tu L0t_tu L1b_tu L1t_tu')
+    listOfFloats.append(opt)
+
+    opt = FloatOption('L01_L12_L23_L01_L12_L34_L45_L01_L12_tu')
+    opt.add('L0b_tu L0t_tu L1b_tu L1t_tu')
+    opt.add('L1b_tu L1t_tu L2b_tu L2t_tu')
+    opt.add('L2b_tu L2t_tu L3b_tu L3t_tu')
+    opt.add('L0b_tu L0t_tu L1b_tu L1t_tu')
+    opt.add('L1b_tu L1t_tu L2b_tu L2t_tu')
+    opt.add('L3b_tu L3t_tu L4b_tu L4t_tu')
+    opt.add('L4b_tu L4t_tu L5b_tu L5t_tu')
+    opt.add('L0b_tu L0t_tu L1b_tu L1t_tu')
+    opt.add('L1b_tu L1t_tu L2b_tu L2t_tu')
+    listOfFloats.append(opt)
+
     opt = FloatOption('L2345_tu_singleLayerIter')
     opt.add('L2b_tu L2t_tu')
     opt.add('L3b_tu L3t_tu')
     opt.add('L4b_tu L4t_tu')
     opt.add('L5b_tu L5t_tu')
+    listOfFloats.append(opt)
+
+    opt = FloatOption('L2345_rw_singleLayerIter')
+    opt.add('L2b_rw L2t_rw')
+    opt.add('L3b_rw L3t_rw')
+    opt.add('L4b_rw L4t_rw')
+    opt.add('L5b_rw L5t_rw')
     listOfFloats.append(opt)
 
     opt = FloatOption('L2345_tu_rw_singleLayerIter_L234_L345_tu_rw')
@@ -36,6 +73,17 @@ def initListOfFloatOptions():
     opt.add('L5b_tu L5t_tu L5b_rw L5t_rw')
     opt.add('L2t_tu L2b_tu L2t_rw L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw')
     opt.add('L3t_tu L3b_tu L3t_rw L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw')
+    listOfFloats.append(opt)
+
+    opt = FloatOption('L2345_tu_rw_singleLayerIter_L2345_tu_singleLayerIter')
+    opt.add('L2b_tu L2t_tu L2b_rw L2t_rw')
+    opt.add('L3b_tu L3t_tu L3b_rw L3t_rw')
+    opt.add('L4b_tu L4t_tu L4b_rw L4t_rw')
+    opt.add('L5b_tu L5t_tu L5b_rw L5t_rw')
+    opt.add('L2b_tu L2t_tu')
+    opt.add('L3b_tu L3t_tu')
+    opt.add('L4b_tu L4t_tu')
+    opt.add('L5b_tu L5t_tu')
     listOfFloats.append(opt)
 
     opt = FloatOption('L5u_L2u_2iterseach')
@@ -199,10 +247,14 @@ def run(fname, opt):
         else:
             pars = ''
         name += 'Iter' + str(i) 
-        #for m in modules.split():
-        #    name += '-' + m
-        
-        cmd = 'python runMP.py -i ' + fname + ' -M ' + modules + ' ' + pars + ' --name ' + name
+
+        # Add beamspot options
+        bs = ''
+        if beamspot: bs += ' --beamspot'
+        if beamspotConstraint: bs += ' --BSC'
+        if surveyConstraint: bs += ' --SC'
+        print 'BS options: \"', bs, '\"'
+        cmd = 'python runMP.py -i ' + fname + ' -M ' + modules + ' ' + pars + ' --name ' + name + bs
         print cmd
         if args.run:
             subprocess.call(cmd,shell=True)
@@ -216,6 +268,13 @@ def main(args):
     if args.listoptions:
         printFloatOptions()
         sys.exit(1)
+    global beamspot
+    global beamspotConstraint
+    global surveyConstraint    
+    beamspot = args.beamspot
+    beamspotConstraint = args.BSC
+    surveyConstraint = args.SC
+
     if args.switch==None:
         print 'Need to specify which option to run using the --switch'
         sys.exit(0)

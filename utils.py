@@ -3,6 +3,8 @@ import argparse, subprocess, sys, os.path, re
 paramMapFile = 'hpsSvtParamMap.txt'
 global paramMap
 paramMap= {}
+beamspotAxialId = 99
+beamspotStereoId = 98
 
 
 
@@ -67,6 +69,39 @@ class Parameter:
         s = '%40s %10f +- %s %5d %s' % (self.name, self.val, error, self.i, change)
         return s
 
+def cmpSensors(a,b):
+    h_a = getHalf(a.i)
+    h_b = getHalf(b.i)
+    if h_a != h_b:
+        print 'cannot compare in two different halves'
+        sys.exit(1)
+    l_a = getModuleNrFromDeName(a.name)
+    l_b = getModuleNrFromDeName(b.name)
+    if l_a < l_b:
+        return -1
+    elif l_a > l_b:
+        return 1
+    else:
+        t_a = isAxial(a.name)
+        t_b = isAxial(b.name)
+        if t_a==t_b:
+            if l_a < 4: return 0
+            s_a = isHole(a.name)
+            s_b = isHole(b.name)
+            if s_a and s_b:
+                return 0
+            elif s_a and not s_b:
+                return -1
+            else:
+                return 1
+        elif t_a == 'axial':            
+            if h_a == 't': return -1
+            else: return 1
+        else:
+            if h_a == 't': return 1
+            else: return -1
+
+    
 
 def initParamMap():
     try:
@@ -97,6 +132,12 @@ def printEigenInfo(mpfile='millepede.eve'):
     status = subprocess.call("cat " + mpfile, shell=True)
     return
 
+
+
+def getPathSorted(paramaters):
+    result = []
+    for p in parameters:
+        l = getModuleNrFromDeName
 
 def getResResults(mpresfile='millepede.res', ignoreZero=False):
     result = []
@@ -192,7 +233,7 @@ def getHalf(param):
 
 def getParamsFromModule(module):
     params = []       
-    m = re.search("L([1-6])([AS]?)([hs]?)([tb])_([tr])([uvw]$)", module)
+    m = re.search("L([0-6])([AS]?)([hs]?)([tb])_([tr])([uvw]$)", module)
     if m==None:
         print 'Wrong module name format ', module, '. Should be matched by regexp. \'L[1-6][AS]?[hs]?[tb]_[tr][uvw]\''
         sys.exit(1) 
