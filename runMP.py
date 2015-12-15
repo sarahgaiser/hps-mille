@@ -5,6 +5,21 @@ import buildSteering
 
 pedeBin = 'MillepedeII/pede'
 
+def getArgs():
+    parser = argparse.ArgumentParser(description='MP help script')
+    parser.add_argument('-i','--inputfiles',nargs='+', required=True, help='List of binary input files.')
+    parser.add_argument('-f','--float', nargs='+', help='List of MP parameters to float')
+    parser.add_argument('-M','--Modules', nargs='+', help='List of modules to float, e.g. L3b L5b')
+    parser.add_argument('-p','--parameters', help='Default parameters')
+    parser.add_argument('-m','--minimization', default='steering/steer_minimization_template.txt', help='Default minimization settings')
+    parser.add_argument('-d','--debug', action='store_true', help='Debug flag')
+    parser.add_argument('-n','--name', help='If given output files will get tagged by this name.')
+    parser.add_argument('-b','--beamspot', action='store_true',help='Beamspot is included in the fit')
+    parser.add_argument('--SC', action='store_true',help='Survey constraint')
+    parser.add_argument('--BSC', action='store_true',help='Beamspot constraint')
+    args = parser.parse_args()
+    print args
+    return args
 
 def getDefaultParams(beamspot=False):
     pars = []
@@ -76,7 +91,7 @@ def updateParams(pars,otherparms,resetActive=True):
     return parsnew
 
 
-def buildSteerFile(name,inputfile,pars,minimStr,surveyConstraints=False,beamspotConstraints=False):
+def buildSteerFile(name,inputfiles,pars,minimStr,surveyConstraints=False,beamspotConstraints=False):
     try:
         f = open(name,'w')
     except IOError:
@@ -84,8 +99,9 @@ def buildSteerFile(name,inputfile,pars,minimStr,surveyConstraints=False,beamspot
         return False
     else:
         f.write("CFiles\n")
-        f.write(inputfile + "\n")
-
+        for ipf in inputfiles:
+            f.write(ipf + "\n")
+        
         f.write("\nParameter\n")
         for p in pars:
             f.write(p.toString() + "\n")
@@ -107,11 +123,18 @@ def buildSteerFile(name,inputfile,pars,minimStr,surveyConstraints=False,beamspot
 
 
 
-def saveResults(inputfilename, name):
-    status = subprocess.call("cp millepede.res " + " millepede-" + os.path.splitext(os.path.basename(inputfilename))[0] + "-" + name + ".res", shell=True)
-    status = subprocess.call("cp millepede.eve " + " millepede-" + os.path.splitext(os.path.basename(inputfilename))[0] + "-" + name + ".eve", shell=True)
-    status = subprocess.call("cp millepede.log " + " millepede-" + os.path.splitext(os.path.basename(inputfilename))[0] + "-" + name + ".log", shell=True)
-    status = subprocess.call("cp millepede.his " + " millepede-" + os.path.splitext(os.path.basename(inputfilename))[0] + "-" + name + ".his", shell=True)
+def saveResults(inputfilenames, name):
+    names = [ os.path.splitext(os.path.basename(n))[0] for n in inputfilenames] 
+    filename = '-'
+    filename = filename.join(names)
+    status = subprocess.call("cp millepede.res " + " millepede-" + filename + "-" + name + ".res", shell=True)
+    status = subprocess.call("cp millepede.eve " + " millepede-" + filename + "-" + name + ".eve", shell=True)
+    status = subprocess.call("cp millepede.log " + " millepede-" + filename + "-" + name + ".log", shell=True)
+    status = subprocess.call("cp millepede.his " + " millepede-" + filename + "-" + name + ".his", shell=True)
+    #status = subprocess.call("cp millepede.res " + " millepede-" + os.path.splitext(os.path.basename(inputfilename))[0] + "-" + name + ".res", shell=True)
+    #status = subprocess.call("cp millepede.eve " + " millepede-" + os.path.splitext(os.path.basename(inputfilename))[0] + "-" + name + ".eve", shell=True)
+    #status = subprocess.call("cp millepede.log " + " millepede-" + os.path.splitext(os.path.basename(inputfilename))[0] + "-" + name + ".log", shell=True)
+    #status = subprocess.call("cp millepede.his " + " millepede-" + os.path.splitext(os.path.basename(inputfilename))[0] + "-" + name + ".his", shell=True)
 
 
 
@@ -184,7 +207,7 @@ def main(args):
 
     # build the actual steering file
     name = "steer.txt"
-    ok = buildSteerFile(name,args.inputfile,pars,minimStr,args.SC,args.BSC)
+    ok = buildSteerFile(name,args.inputfiles,pars,minimStr,args.SC,args.BSC)
     if not ok:
         print "Couldn't build steering file"
         sys.exit(1)
@@ -197,23 +220,12 @@ def main(args):
 
     # save results to a specific name if supplied
     if args.name != None:
-        saveResults(args.inputfile, args.name)
+        saveResults(args.inputfiles, args.name)
 
     
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='MP help script')
-    parser.add_argument('-i','--inputfile', required=True, help='List of parameters to float')
-    parser.add_argument('-f','--float', nargs='+', help='List of MP parameters to float')
-    parser.add_argument('-M','--Modules', nargs='+', help='List of modules to float, e.g. L3b L5b')
-    parser.add_argument('-p','--parameters', help='Default parameters')
-    parser.add_argument('-m','--minimization', default='steering/steer_minimization_template.txt', help='Default minimization settings')
-    parser.add_argument('-d','--debug', action='store_true', help='Debug flag')
-    parser.add_argument('-n','--name', help='If given output files will get tagged by this name.')
-    parser.add_argument('-b','--beamspot', action='store_true',help='Beamspot is included in the fit')
-    parser.add_argument('--SC', action='store_true',help='Survey constraint')
-    parser.add_argument('--BSC', action='store_true',help='Beamspot constraint')
-    args = parser.parse_args()
-    print args
+
+    args = getArgs()
 
 
     main(args)
