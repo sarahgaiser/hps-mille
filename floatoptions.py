@@ -117,14 +117,6 @@ class FloatOptions:
         opt.add('L2b_tu L3b_tu L2t_tu L3t_tu ')
         l.append(opt)    
 
-        opt = FloatOption('L2-5-HOLE_tu')
-        opt.add('L2b_tu L3b_tu L4hb_tu L5hb_tu L2t_tu L3t_tu L4ht_tu L5ht_tu')
-        l.append(opt)    
-
-        opt = FloatOption('L2-5-HOLE_tu_rw')
-        opt.add('L2b_tu L3b_tu L4hb_tu L5hb_tu L2t_tu L3t_tu L4ht_tu L5ht_tu L2b_rw L3b_rw L4hb_rw L5hb_rw L2t_rw L3t_rw L4ht_rw L5ht_rw')
-        l.append(opt)    
-
         opt = FloatOption('L234_tu_rw')
         opt.add('L2b_tu L3b_tu L4b_tu L5b_tu L2t_tu L3t_tu L4t_tu L5t_tu')
         l.append(opt)    
@@ -233,7 +225,41 @@ class FloatOptions:
         opt.add('L3t_tu L3b_tu L3t_rw L3b_rw L4t_tu L4t_rw L4b_tu L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw')
         opt.add('L1t_tu L1b_tu L1t_rw L1b_rw L2t_tu L2t_rw L2b_tu L2b_rw L3t_tu L3t_rw L3b_tu L3b_rw')
         opt.add('L4t_tu L4b_tu L4t_rw L4b_rw L5t_tu L5t_rw L5b_tu L5b_rw L6t_tu L6t_rw L6b_tu L6b_rw')
+        l.append(opt)
+        
+        opt = FloatOption('L2-5-HOLE_tu')
+        opt.add('L2b_tu L3b_tu L4hb_tu L5hb_tu L2t_tu L3t_tu L4ht_tu L5ht_tu')
         l.append(opt)    
+
+        opt = FloatOption('L2-5-HOLE_tu_rw')
+        opt.add('L2b_tu L3b_tu L4hb_tu L5hb_tu L2t_tu L3t_tu L4ht_tu L5ht_tu L2b_rw L3b_rw L4hb_rw L5hb_rw L2t_rw L3t_rw L4ht_rw L5ht_rw')
+        l.append(opt)    
+
+
+        opt = FloatOption('L2-5-HOLE_tu_L6-HOLE_tu')
+        opt.add('L2b_tu L3b_tu L4hb_tu L5hb_tu L2t_tu L3t_tu L4ht_tu L5ht_tu')
+        opt.add('L6hb_tu L6ht_tu')
+        l.append(opt)    
+
+        opt = FloatOption('L2-5-HOLE_tu_rw_L6-HOLE-tu_rw')
+        opt.add('L2b_tu L3b_tu L4hb_tu L5hb_tu L2t_tu L3t_tu L4ht_tu L5ht_tu L2b_rw L3b_rw L4hb_rw L5hb_rw L2t_rw L3t_rw L4ht_rw L5ht_rw')
+        opt.add('L6hb_tu L6ht_tu L6hb_rw L6ht_rw')
+        l.append(opt)    
+
+        opt = FloatOption('L2-6-HOLE_tu')
+        opt.add('L2b_tu L3b_tu L4hb_tu L5hb_tu L6hb_tu L2t_tu L3t_tu L4ht_tu L5ht_tu L6ht_tu')
+        l.append(opt)    
+
+        opt = FloatOption('L2-6-HOLE_tu_rw')
+        opt.add('L2b_tu L3b_tu L4hb_tu L5hb_tu L6hb_tu L2t_tu L3t_tu L4ht_tu L5ht_tu L6ht_tu L2b_rw L3b_rw L4hb_rw L5hb_rw L6hb_rw L2t_rw L3t_rw L4ht_rw L5ht_rw L6ht_rw')
+        l.append(opt)    
+
+
+        opt = FloatOption('L2-5-HOLE_tu_L2-5-HOLE_tu_rw')
+        opt.add('L2b_tu L3b_tu L4hb_tu L5hb_tu L2t_tu L3t_tu L4ht_tu L5ht_tu')
+        opt.add('L2b_tu L3b_tu L4hb_tu L5hb_tu L2t_tu L3t_tu L4ht_tu L5ht_tu L2b_rw L3b_rw L4hb_rw L5hb_rw L2t_rw L3t_rw L4ht_rw L5ht_rw')
+        l.append(opt)    
+
 
         return l
 
