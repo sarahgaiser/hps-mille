@@ -11,13 +11,14 @@ make
 
 2. Run Millepede once:
 
-To run millepede on the output binary form GBL:
+To run millepede on the output binary form GBL use the ```runMP.py``` script
 
+```
 cd /nfs/slac/g/hps2/phansson/software/hps-mille/
 ./runMP.py -i ../batch/output/hps_005796.evio.0-nominalAllevents/milleBinaryISN_hps_005796.evio.0.gbl.dat -M NAMES
+```
 
-
-The eNAMESf are a list coded as the following regexp:
+The ```NAMES``` are a list coded as the following regexp:
 L(1-6)[AS]?[hs]?[tb]_([tr])([uvw])
 i.e. the ones with question mark is optional (and you get the inclusive sensors if not given).
 
