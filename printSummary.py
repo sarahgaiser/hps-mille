@@ -4,7 +4,7 @@ import argparse, subprocess, sys, os.path, re
 import utils
 sys.path.append('pythonutils')
 import compareRootHists
-from ROOT import TGraph, TCanvas, TH1F, TLegend, gPad, TH2F
+from ROOT import TGraph, TCanvas, TH1F, TLegend, gPad, TH2F, TLine
 
 
 def setBinLabels(gr,pars):
@@ -27,6 +27,8 @@ def setBinLabelsHist(gr,pars):
         b = h.GetXaxis().FindBin(ip)
         print 'ip ', ip, ' b ', b ,': ' , p.toNiceString()
         h.GetXaxis().SetBinLabel(b, p.name + '(' + str(p.i) + ')')
+        h.GetXaxis().SetLabelSize(0.018)
+        h.GetYaxis().SetLabelSize(0.02)
         ip = ip + 1
 
 
@@ -45,7 +47,8 @@ def plotResCmp(filenames, legendlist, half,t,d,uflip):
     vals = {}
     icolor = 1
     istyle = 20
-    leg = TLegend(0.78,0.6,0.9,0.87)
+#    leg = TLegend(0.78,0.6,0.9,0.87)
+    leg = TLegend(0.78,0.8,0.9,0.87)
     leg.SetBorderSize(0)
     leg.SetFillStyle(0)
     leg.SetFillColor(0)
@@ -94,13 +97,25 @@ def plotResCmp(filenames, legendlist, half,t,d,uflip):
             if v > maxVal: maxVal = v
             if v < minVal: minVal = v
         i = 0
+        isize=1
+        if(run==7798): 
+          icolor=1
+          istyle=22
+          isize=1.5
+
+        if(run==5784): 
+          icolor=801
+          istyle=20
+          isize=1.5
+
         h_sum.SetMarkerStyle(istyle)
-        h_sum.SetMarkerSize(1.0)
+        h_sum.SetMarkerSize(isize)
         h_sum.SetLineColor(icolor)
         h_sum.SetMarkerColor(icolor)
         if len(vals)==0:
             pars_template = pars
         icolor=icolor+1
+        istyle=istyle+1
         if icolor>7:
             icolor = 1
             istyle = 21
@@ -113,16 +128,24 @@ def plotResCmp(filenames, legendlist, half,t,d,uflip):
 
     h_sum_template = TH2F('h_' + half,'h_' + half, len(pars_template),0,len(pars_template), 10, minVal*1.1, maxVal*1.1)
     h_sum_template.SetStats(False)
-    h_sum_template.SetTitle('Millepede corrections per sensor;;local translation/rotations (mm/rad)')
-    h_sum.SetTitle('Millepede corrections per sensor;;local translation/rotations (mm/rad)')
+    if(half == 'top'):
+        h_sum_template.SetTitle('Millepede corrections per sensor, top;;local translation/rotations (mm/rad)')
+        h_sum.SetTitle('Millepede corrections per sensor, top;;local translation/rotations (mm/rad)')
+    if(half == 'bot'):
+        h_sum_template.SetTitle('Millepede corrections per sensor, bottom;;local translation/rotations (mm/rad)')
+        h_sum.SetTitle('Millepede corrections per sensor, bottom;;local translation/rotations (mm/rad)')
     setBinLabelsHist(h_sum_template,pars_template)
 
     c_sum.cd()
     h_sum_template.Draw()
     iv = 0
     for k,v in vals.iteritems():
-        v.Draw('PL,same')
+#        v.Draw('PL,same')
+        v.Draw('P,same')
     leg.Draw()
+    zeroline = TLine(0,0,108,0)
+    zeroline.SetLineStyle(2)
+    zeroline.Draw("same") 
 
     savename += '_' + half
     if t != '': savename += '_' + t 
