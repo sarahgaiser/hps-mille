@@ -7,8 +7,10 @@ pedeBin = 'MillepedeII/pede'
 
 def getArgs():
     parser = argparse.ArgumentParser(description='MP help script')
-    parser.add_argument('-i','--inputfiles',nargs='+', required=True, help='List of binary input files.')
+    parser.add_argument('-i','--inputfiles',nargs='+', help='List of binary input files.',default="")
     parser.add_argument('-f','--float', nargs='+', help='List of MP parameters to float')
+    parser.add_argument('-l','--flist',help="File list of binary input files.",default="")
+    #parser.add_argument('-z','--inDir',help="Folder containing the millepede.bin files")
     parser.add_argument('-M','--Modules', nargs='+', help='List of modules to float, e.g. L3b L5b')
     parser.add_argument('-p','--parameters', help='Default parameters')
     parser.add_argument('-m','--minimization', default='steering/steer_minimization_template.txt', help='Default minimization settings')
@@ -91,7 +93,7 @@ def updateParams(pars,otherparms,resetActive=True):
     return parsnew
 
 
-def buildSteerFile(name,inputfiles,pars,minimStr,surveyConstraints=False,beamspotConstraints=False):
+def buildSteerFile(name,inputfiles,flist,pars,minimStr,surveyConstraints=False,beamspotConstraints=False):
     try:
         f = open(name,'w')
     except IOError:
@@ -102,6 +104,12 @@ def buildSteerFile(name,inputfiles,pars,minimStr,surveyConstraints=False,beamspo
         for ipf in inputfiles:
             f.write(ipf + "\n")
         
+        if (flist != ""):
+            ilist = open (flist,'r')
+            for line in ilist.readlines():
+                f.write(line.strip() + "\n")
+            ilist.close()
+
         f.write("\nParameter\n")
         for p in pars:
             f.write(p.toString() + "\n")
@@ -164,6 +172,7 @@ def main(args):
 
     # check if there is a supplied parameter file.
     # this could be a result file from a previous fit
+    print "Parameters:", args.parameters
     inputpars = getParams(args.parameters)
     print 'Found ', len(inputpars), ' parameters to update'
     if args.parameters != None:
@@ -208,7 +217,12 @@ def main(args):
 
     # build the actual steering file
     name = "steer.txt"
-    ok = buildSteerFile(name,args.inputfiles,pars,minimStr,args.SC,args.BSC)
+    
+    if len(args.inputfiles)==0 and len(args.flist)==0:
+        print "Specify input files [-i <inputfiles> ] or list of input files [-z <filelist>]"
+        sys.exit(1)
+
+    ok = buildSteerFile(name,args.inputfiles,args.flist,pars,minimStr,args.SC,args.BSC)
     if not ok:
         print "Couldn't build steering file"
         sys.exit(1)
