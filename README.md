@@ -23,8 +23,9 @@ L(1-6)[AS]?[hs]?[tb]_([tr])([uvw])
 i.e. the ones with question mark is optional (and you get the inclusive sensors if not given).
 
 Example:
--M L4Ah_rv # rotation around unmeasured direction for L4, axial, hole sensor.
--M L3_tu # translation in measured coord for L3 axial and stereo sensor
+-M L4Aht_rv # rotation around unmeasured direction for top L4, axial, hole sensor.
+
+-M L3t_tu # translation in measured coord for top L3 axial and stereo sensor
 
 or you can run with the MP parameters instead if you want to (I prefer the human readable way):
 ./runMP.py -i ../batch/output/hps_005796.evio.0-nominalAllevents/milleBinaryISN_hps_005796.evio.0.gbl.dat -M parameters
