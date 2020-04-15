@@ -1,6 +1,6 @@
 import argparse, subprocess, sys, os.path, re
 
-paramMapFile = 'hpsSvtParamMap.txt'
+paramMapFile = 'hpsSvtParamMap_2019.txt'
 global paramMap
 paramMap= {}
 beamspotAxialId = 99

@@ -10,6 +10,7 @@ def getArgs():
     parser.add_argument('-i','--inputfiles',nargs='+', help='List of binary input files.',default="")
     parser.add_argument('-f','--float', nargs='+', help='List of MP parameters to float')
     parser.add_argument('-l','--flist',help="File list of binary input files.",default="")
+    parser.add_argument('-y','--year',dest="year",help="Which detector geometry? (2016 or 2019 [default])",default="2019")
     #parser.add_argument('-z','--inDir',help="Folder containing the millepede.bin files")
     parser.add_argument('-M','--Modules', nargs='+', help='List of modules to float, e.g. L3b L5b')
     parser.add_argument('-p','--parameters', help='Default parameters')
@@ -23,12 +24,21 @@ def getArgs():
     print args
     return args
 
-def getDefaultParams(beamspot=False):
+
+#This should parse the .txt!!! not hardcode values!
+def getDefaultParams(beamspot=False,year="2019"):
+    maxModules=-1
+    if (year=="2016"):
+        maxModules=19
+    elif (year=="2019"):
+        maxModules=21
+    else:
+        print "ERROR::getDefaultParams::year must be '2016' or '2019'"
     pars = []
     for h in range(1,3):
         for t in range(1,3):
             for d in range(1,4):
-                r = range(1,19)
+                r = range(1,maxModules)
                 if beamspot:
                     r.append(beamspotStereoId)
                     r.append(beamspotAxialId)
@@ -163,7 +173,7 @@ def main(args):
     print "just GO"
 
     # initialize all the parameters into a list
-    pars = getDefaultParams(args.beamspot)
+    pars = getDefaultParams(args.beamspot,args.year)
     print 'Found ', len(pars), 'default parameters'
     if args.debug:
         for p in pars:
