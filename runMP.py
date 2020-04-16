@@ -18,6 +18,7 @@ def getArgs():
     parser.add_argument('-d','--debug', action='store_true', help='Debug flag')
     parser.add_argument('-n','--name', help='If given output files will get tagged by this name.')
     parser.add_argument('-b','--beamspot', action='store_true',help='Beamspot is included in the fit')
+    parser.add_argument('-s','--subito', dest="subito",action='store_true',help='Activate subito mode',default=False)
     parser.add_argument('--SC', action='store_true',help='Survey constraint')
     parser.add_argument('--BSC', action='store_true',help='Beamspot constraint')
     args = parser.parse_args()
@@ -157,7 +158,7 @@ def saveResults(inputfilenames, name):
 
 
 
-def runPede(filename):
+def runPede(filename,args):
     print "Clean up..."
     status = subprocess.call("rm millepede.res", shell=True)
     status = subprocess.call("rm millepede.eve", shell=True)
@@ -165,6 +166,8 @@ def runPede(filename):
     status = subprocess.call("rm millepede.his", shell=True)
     
     s = pedeBin + " " + filename
+    if args.subito:
+        s+= " -s"
     print 'Execute: ', s
     status = subprocess.call(s, shell=True)
 
@@ -238,7 +241,7 @@ def main(args):
         sys.exit(1)
 
     # run the fit
-    runPede(name)
+    runPede(name,args)
 
     # print results
     printResults()
@@ -251,6 +254,4 @@ def main(args):
 if __name__ == "__main__":
 
     args = getArgs()
-
-
     main(args)
