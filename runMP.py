@@ -11,6 +11,7 @@ def getArgs():
     parser.add_argument('-f','--float', nargs='+', help='List of MP parameters to float')
     parser.add_argument('-l','--flist',help="File list of binary input files.",default="")
     parser.add_argument('-y','--year',dest="year",help="Which detector geometry? (2016 or 2019 [default])",default="2019")
+    parser.add_argument('-o','--outDir',dest="outDir",help="Path to folder to where to move the outputs",default="./MPII_results_")
     #parser.add_argument('-z','--inDir',help="Folder containing the millepede.bin files")
     parser.add_argument('-M','--Modules', nargs='+', help='List of modules to float, e.g. L3b L5b')
     parser.add_argument('-p','--parameters', help='Default parameters')
@@ -143,20 +144,21 @@ def buildSteerFile(name,inputfiles,flist,pars,minimStr,surveyConstraints=False,b
 
 
 
-def saveResults(inputfilenames, name):
+def saveResults(args):
+    inputfilenames = args.inputfiles
+    name = args.name
+    outDir=args.outDir+args.name
+    if not os.path.exists(outDir):
+        os.makedirs(outDir)
+    
     names = [ os.path.splitext(os.path.basename(n))[0] for n in inputfilenames] 
     filename = '-'
     filename = filename.join(names)
-    status = subprocess.call("cp millepede.res " + " millepede-" + filename + "-" + name + ".res", shell=True)
-    status = subprocess.call("cp millepede.eve " + " millepede-" + filename + "-" + name + ".eve", shell=True)
-    status = subprocess.call("cp millepede.log " + " millepede-" + filename + "-" + name + ".log", shell=True)
-    status = subprocess.call("cp millepede.his " + " millepede-" + filename + "-" + name + ".his", shell=True)
-    #status = subprocess.call("cp millepede.res " + " millepede-" + os.path.splitext(os.path.basename(inputfilename))[0] + "-" + name + ".res", shell=True)
-    #status = subprocess.call("cp millepede.eve " + " millepede-" + os.path.splitext(os.path.basename(inputfilename))[0] + "-" + name + ".eve", shell=True)
-    #status = subprocess.call("cp millepede.log " + " millepede-" + os.path.splitext(os.path.basename(inputfilename))[0] + "-" + name + ".log", shell=True)
-    #status = subprocess.call("cp millepede.his " + " millepede-" + os.path.splitext(os.path.basename(inputfilename))[0] + "-" + name + ".his", shell=True)
-
-
+    status = subprocess.call("cp millepede.res " + " "+outDir+"/millepede-" + filename + "-" + name + ".res", shell=True)
+    status = subprocess.call("cp millepede.eve " + " "+outDir+"/millepede-" + filename + "-" + name + ".eve", shell=True)
+    status = subprocess.call("cp millepede.log " + " "+outDir+"/millepede-" + filename + "-" + name + ".log", shell=True)
+    status = subprocess.call("cp millepede.his " + " "+outDir+"/millepede-" + filename + "-" + name + ".his", shell=True)
+    
 
 def runPede(filename,args):
     print "Clean up..."
@@ -246,9 +248,9 @@ def main(args):
     # print results
     printResults()
 
-    # save results to a specific name if supplied
+    # save results to a specific name if supplied.
     if args.name != None:
-        saveResults(args.inputfiles, args.name)
+        saveResults(args)
 
     
 if __name__ == "__main__":
