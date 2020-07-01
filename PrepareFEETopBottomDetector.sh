@@ -34,9 +34,10 @@ python buildCompact.py -c compact_${COMPACTNAME}.xml -j ${JAVADIR}/distribution/
 DETDIR=${JAVADIR}/detector-data/detectors/HPS_${TAG}_${OUTITERATION}
 
 cp -r ${JAVADIR}/detector-data/detectors/HPS_${TAG}_${ITERATION} ${DETDIR}
+
+rm ${DETDIR}/*.lcdd
 cp compact_${COMPACTNAME}.xml ${DETDIR}/compact.xml
 cat "name: ${TAG}_${OUTITERATION}" > ${DETDIR}/detector.properties
-
 
 cd ${JAVADIR}
 sh makeNewAlignmentIterationLCDD.sh ${OUTITERATION} ${TAG}
