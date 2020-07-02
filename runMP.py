@@ -128,7 +128,7 @@ def buildSteerFile(name,inputfiles,flist,pars,minimStr,constraintFile="",surveyC
         if (constraintFile!=""):
 
             f.write("\n")
-            f.write("!Constraint file")
+            f.write("!Constraint file\n")
             f.write(constraintFile+"\n")
             
         #The floating parameters
@@ -247,7 +247,7 @@ def main(args):
         print "Specify input files [-i <inputfiles> ] or list of input files [-z <filelist>]"
         sys.exit(1)
 
-    ok = buildSteerFile(name,args.inputfiles,args.flist,pars,minimStr,args.SC,args.BSC)
+    ok = buildSteerFile(name,args.inputfiles,args.flist,pars,minimStr,args.constraints, args.SC,args.BSC)
     if not ok:
         print "Couldn't build steering file"
         sys.exit(1)
