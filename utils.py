@@ -232,9 +232,9 @@ def getHalf(param):
 
 def getParamsFromModule(module):
     params = []       
-    m = re.search("L([0-6])([AS]?)([hs]?)([tb])_([tr])([uvw]$)", module)
+    m = re.search("L([1-7])([AS]?)([hs]?)([tb])_([tr])([uvw]$)", module)
     if m==None:
-        print 'Wrong module name format ', module, '. Should be matched by regexp. \'L[1-6][AS]?[hs]?[tb]_[tr][uvw]\''
+        print 'Wrong module name format ', module, '. Should be matched by regexp. \'L[1-7][AS]?[hs]?[tb]_[tr][uvw]\''
         sys.exit(1) 
     else:
         print m.groups()

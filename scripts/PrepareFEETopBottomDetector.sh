@@ -1,18 +1,21 @@
 #script for building a detector from the millepede top/bottom solutions
 
-ITERATION="iter0"
-OUTITERATION="iter1"
+ITERATION="iter1"
+OUTITERATION="iter2"
 
 TAG="NewOPAngleBOT_m0_8mrad"
+OUTTAG="NewOPAngleBOT_m0_8mrad"
 JAVADIR="/nfs/slac/g/hps2/pbutti/alignment/hps-java/"
 
+#Momentum Constraints
+TOPRESIDUALS="MPII_results_CMatrixConstrained_MomConstrain_MPII_10104_FEE_BOFFAlign_top/CMatrixConstrained-Mom1000kConstrained-millepede_iter1.res"
+BOTRESIDUALS="MPII_results_CMatrixConstrained_MomConstrain_MPII_10104_FEE_BOFFAlign_bot/CMatrixConstrained-Mom1000kConstrained-millepede_iter1.res"
 
-TOPRESIDUALS="MPII_results_CMatrixConstrained_MomConstrain_MPII_10104_FEE_BOFFAlign_top/CMatrixConstrained-Mom1000kConstrained-millepede.res"
-BOTRESIDUALS="MPII_results_CMatrixConstrained_MomConstrain_MPII_10104_FEE_BOFFAlign_bot/CMatrixConstrained-Mom1000kConstrained-millepede.res"
+#Momentum Unconstrained
+#TOPRESIDUALS="MPII_results_CMatrixConstrained_MomConstrain_MPII_10104_FEE_BOFFAlign_top/CMatrixConstrained-MomUnConstrained-millepede.res"
+#BOTRESIDUALS="MPII_results_CMatrixConstrained_MomConstrain_MPII_10104_FEE_BOFFAlign_bot/CMatrixConstrained-MomUnConstrained-millepede.res"
 
-
-
-COMPACTNAME="CMatrixConstrained-Mom1000kConstrained-millepede"
+COMPACTNAME="CMatrixConstrained-Mom1000kConstrained-millepede_iter1"
 
 #copy over the compact
 
@@ -20,18 +23,14 @@ cp ${JAVADIR}/detector-data/detectors/HPS_${TAG}_${ITERATION}/compact.xml  compa
 
 #build the compact with top residuals
 
-
 python buildCompact.py -c compact_${COMPACTNAME}.xml -j ${JAVADIR}/distribution/target/hps-distribution-4.5-SNAPSHOT-bin.jar -r ${TOPRESIDUALS} -t
 
 #build the compact with bottom residuals
 
 python buildCompact.py -c compact_${COMPACTNAME}.xml -j ${JAVADIR}/distribution/target/hps-distribution-4.5-SNAPSHOT-bin.jar -r ${BOTRESIDUALS} -t
 
-
-
-
 #make the tag for the next iteration
-DETDIR=${JAVADIR}/detector-data/detectors/HPS_${TAG}_${OUTITERATION}
+DETDIR=${JAVADIR}/detector-data/detectors/HPS_${OUTTAG}_${OUTITERATION}
 
 cp -r ${JAVADIR}/detector-data/detectors/HPS_${TAG}_${ITERATION} ${DETDIR}
 
@@ -40,7 +39,7 @@ cp compact_${COMPACTNAME}.xml ${DETDIR}/compact.xml
 echo "name: ${TAG}_${OUTITERATION}" > ${DETDIR}/detector.properties
 
 cd ${JAVADIR}
-sh makeNewAlignmentIterationLCDD.sh ${OUTITERATION} ${TAG}
+sh makeNewAlignmentIterationLCDD.sh ${OUTITERATION} ${OUTTAG}
 
 cd - 
 
