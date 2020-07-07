@@ -173,9 +173,13 @@ def printResults():
 
 def getModuleNrFromDeName(deName):
     m = re.search("module_L(\d)\S_", deName)
+    print "PF::getModuleNrFromDeName=", deName
     if m==None:
-        print 'Wrong module name format ', module
-        sys.exit(1) 
+        print 'Wrong module name format. Probably a global module',  deName
+        m = re.search("module_L(\d)",deName)
+        l = m.group(1)
+        print "PF:: l = ", l
+        #sys.exit(1) 
     else:
         l = m.group(1)
         return int(l)
