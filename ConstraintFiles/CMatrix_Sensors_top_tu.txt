@@ -1,0 +1,17 @@
+!Constrain the global Y movements of the front
+Constraint 0.0
+11101 1.
+11102 0.995
+11103 1.
+11104 0.995
+11105 1.
+11106 -0.995
+11107 1.
+11108 -0.995
+
+!Constrain the global X movements of the front
+Constraint 0.0
+11102 0.0998
+11104 0.0998
+11106 -0.0998
+11108 -0.0998

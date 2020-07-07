@@ -20,6 +20,7 @@ def getArgs():
     parser.add_argument('-n','--name', help='If given output files will get tagged by this name.')
     parser.add_argument('-b','--beamspot', action='store_true',help='Beamspot is included in the fit')
     parser.add_argument('-s','--subito', dest="subito",action='store_true',help='Activate subito mode',default=False)
+    parser.add_argument('-c','--constraints', dest="constraints", help="Constraint file",default="")
     parser.add_argument('--SC', action='store_true',help='Survey constraint')
     parser.add_argument('--BSC', action='store_true',help='Beamspot constraint')
     args = parser.parse_args()
@@ -105,7 +106,7 @@ def updateParams(pars,otherparms,resetActive=True):
     return parsnew
 
 
-def buildSteerFile(name,inputfiles,flist,pars,minimStr,surveyConstraints=False,beamspotConstraints=False):
+def buildSteerFile(name,inputfiles,flist,pars,minimStr,constraintFile="",surveyConstraints=False,beamspotConstraints=False):
     try:
         f = open(name,'w')
     except IOError:
@@ -116,20 +117,31 @@ def buildSteerFile(name,inputfiles,flist,pars,minimStr,surveyConstraints=False,b
         for ipf in inputfiles:
             f.write(ipf + "\n")
         
+        #The CFiles list
         if (flist != ""):
             ilist = open (flist,'r')
             for line in ilist.readlines():
                 f.write(line.strip() + "\n")
             ilist.close()
+        
+        #The external constraint file
+        if (constraintFile!=""):
 
+            f.write("\n")
+            f.write("!Constraint file\n")
+            f.write(constraintFile+"\n")
+            
+        #The floating parameters
         f.write("\nParameter\n")
         for p in pars:
             f.write(p.toString() + "\n")
 
+        #Apply survey constants
         if surveyConstraints:
             f.write(buildSteering.getSurveyMeasurements(paramMap))
             f.write("\n\n")
-
+        
+        #Apply beamspotConstraint (This I think is not correct)
         if beamspotConstraints:
 #            f.write(buildSteering.getBeamspotConstraints(paramMap))
             f.write(buildSteering.getBeamspotConstraintsFloatingOnly(pars))
@@ -139,9 +151,6 @@ def buildSteerFile(name,inputfiles,flist,pars,minimStr,surveyConstraints=False,b
         f.write(minimStr)
         f.close()        
         return True
-
-
-
 
 
 def saveResults(args):
@@ -158,6 +167,7 @@ def saveResults(args):
     status = subprocess.call("cp millepede.eve " + " "+outDir+"/millepede-" + filename + "-" + name + ".eve", shell=True)
     status = subprocess.call("cp millepede.log " + " "+outDir+"/millepede-" + filename + "-" + name + ".log", shell=True)
     status = subprocess.call("cp millepede.his " + " "+outDir+"/millepede-" + filename + "-" + name + ".his", shell=True)
+    status = subprocess.call("cp steer.txt "     + " "+outDir+"/millepede-steer-" + filename + "-" + name + ".txt", shell=True) 
     
 
 def runPede(filename,args):
@@ -237,7 +247,7 @@ def main(args):
         print "Specify input files [-i <inputfiles> ] or list of input files [-z <filelist>]"
         sys.exit(1)
 
-    ok = buildSteerFile(name,args.inputfiles,args.flist,pars,minimStr,args.SC,args.BSC)
+    ok = buildSteerFile(name,args.inputfiles,args.flist,pars,minimStr,args.constraints, args.SC,args.BSC)
     if not ok:
         print "Couldn't build steering file"
         sys.exit(1)
