@@ -1,0 +1,397 @@
+CFiles
+!Nominal Geometry millepede binary. No composite structures derivatives
+!!/Users/pbutti/sw/hps-java/alicheck.slcio_millepede.bin    
+!Nominal Geometry millepede binary. Using iss687_dev for comparison
+!!/Users/pbutti/sw/hps-java/alicheck_iss687.slcio_millepede.bin
+
+!jna-dev using Rotations of L1 5mrad top with compact HPS_NewAlParRot10mrad_iter0
+!!/Users/pbutti/sw/hps-java/ali_L1L2topRotations.slcio_millepede.bin
+
+!jna-dev using Rotations of L1 5mrad top axial and L3 5mrad bottom axial with compact HPS_NewAlParRot10mrad_iter0
+!The rotations corrections for the new thin layers are 10 times smaller while the corrections for the outer layers (L3-L7) 
+!!/Users/pbutti/sw/hps-java/ali_Rotations_5mrL1At_mrL3Ab.slcio_millepede.bin
+
+!jna-dev using Rotations of L1-L2 5mrad top axial and L3-L4 5mrad bottom axial with compact HPS_NewAlParRot10mrad_iter0
+!The rotation corrections for L3-L4 bottom seem correct, while for the thin layers seem wrong. 
+!!/Users/pbutti/sw/hps-java/ali_Rotations_5mrL12At_mrL34Ab.slcio_millepede.bin
+
+
+!jna-dev using Rotations of L2 5mrad top axial and L1-L3-L4 5mrad bottom axial with compact HPS_NewAlParRot10mrad_iter0
+!In these samples I used an abs value for the derivative du/drw.
+!!/Users/pbutti/sw/hps-java/ali_Rotations_5mrL2At_mrL134Ab.slcio_millepede.bin
+
+
+!jna-dev using Rotations of L2 5mrad top axial and L1-L3-L4 5mrad bottom axial with compact HPS_NewAlParRot10mrad_iter0
+!Only positive derivatives are kept.
+!!/Users/pbutti/sw/hps-java/ali_Rotations_5mrL2At_mrL134Ab_onlyPosDers.slcio_millepede.bin
+
+
+!jna-dev using Rotations of L2 5mrad top axial and L1-L3-L4 5mrad bottom axial with compact HPS_NewAlParRot10mrad_iter0
+!Derivatives are flipped sign
+!!/Users/pbutti/sw/hps-java/ali_Rotations_5mrL2At_mrL134Ab_FlipSignDers.slcio_millepede.bin
+
+!jna-dev using Rotations of L2 5mrad top axial and L1-L3-L4 5mrad bottom axial with compact HPS_NewAlParRot10mrad_iter0
+!Derivatives are damped of a factor 20
+!!/Users/pbutti/sw/hps-java/ali_Rotations_5mrL2At_mrL134Ab_DampDers.slcio_millepede.bin
+
+!jna-dev using Rotations of L2 5mrad top axial and L1-L3-L4 5mrad bottom axial with compact HPS_NewAlParRot10mrad_iter0
+!Fix to derivatives
+/Users/pbutti/sw/hps-java/ali_Rotations_5mrL2At_mrL134Ab_Fix.slcio_millepede.bin
+
+!jna-dev using Rotations of L1 10mrad top with compact HPS_NewAlParRot10mrad_iter0
+!!/Users/pbutti/sw/hps-java/ali_L1L2topRotations_10mrad.slcio_millepede.bin
+
+!jna-dev using Rotations of L1 30mrad top with compact HPS_NewAlParRot10mrad_iter0
+!!/Users/pbutti/sw/hps-java/ali_L1L2topRotations_30mrad.slcio_millepede.bin
+
+
+Parameter
+11101   0.000000 -1.000000 module_L1t_halfmodule_axial
+11102   0.000000 -1.000000 module_L1t_halfmodule_stereo
+11103   0.000000 -1.000000 module_L2t_halfmodule_axial
+11104   0.000000 -1.000000 module_L2t_halfmodule_stereo
+11105   0.000000  -1.000000 module_L3t_halfmodule_axial
+11106   0.000000  -1.000000 module_L3t_halfmodule_stereo
+11107   0.000000  -1.000000 module_L4t_halfmodule_stereo
+11108   0.000000  -1.000000 module_L4t_halfmodule_axial
+11109   0.000000  -1.000000 module_L5t_halfmodule_axial_hole
+11110   0.000000  -1.000000 module_L5t_halfmodule_stereo_hole
+11111   0.000000  -1.000000 module_L5t_halfmodule_axial_slot
+11112   0.000000  -1.000000 module_L5t_halfmodule_stereo_slot
+11113   0.000000  -1.000000 module_L6t_halfmodule_axial_hole
+11114   0.000000  -1.000000 module_L6t_halfmodule_stereo_hole
+11115   0.000000  -1.000000 module_L6t_halfmodule_axial_slot
+11116   0.000000  -1.000000 module_L6t_halfmodule_stereo_slot
+11117   0.000000  -1.000000 module_L7t_halfmodule_axial_hole
+11118   0.000000  -1.000000 module_L7t_halfmodule_stereo_hole
+11119   0.000000  -1.000000 module_L7t_halfmodule_axial_slot
+11120   0.000000  -1.000000 module_L7t_halfmodule_stereo_slot
+11201   0.000000  -1.000000 module_L1t_halfmodule_axial
+11202   0.000000  -1.000000 module_L1t_halfmodule_stereo
+11203   0.000000  -1.000000 module_L2t_halfmodule_axial
+11204   0.000000  -1.000000 module_L2t_halfmodule_stereo
+11205   0.000000  -1.000000 module_L3t_halfmodule_axial
+11206   0.000000  -1.000000 module_L3t_halfmodule_stereo
+11207   0.000000  -1.000000 module_L4t_halfmodule_stereo
+11208   0.000000  -1.000000 module_L4t_halfmodule_axial
+11209   0.000000  -1.000000 module_L5t_halfmodule_axial_hole
+11210   0.000000  -1.000000 module_L5t_halfmodule_stereo_hole
+11211   0.000000  -1.000000 module_L5t_halfmodule_axial_slot
+11212   0.000000  -1.000000 module_L5t_halfmodule_stereo_slot
+11213   0.000000  -1.000000 module_L6t_halfmodule_axial_hole
+11214   0.000000  -1.000000 module_L6t_halfmodule_stereo_hole
+11215   0.000000  -1.000000 module_L6t_halfmodule_axial_slot
+11216   0.000000  -1.000000 module_L6t_halfmodule_stereo_slot
+11217   0.000000  -1.000000 module_L7t_halfmodule_axial_hole
+11218   0.000000  -1.000000 module_L7t_halfmodule_stereo_hole
+11219   0.000000  -1.000000 module_L7t_halfmodule_axial_slot
+11220   0.000000  -1.000000 module_L7t_halfmodule_stereo_slot
+11301   0.000000  -1.000000 module_L1t_halfmodule_axial
+11302   0.000000  -1.000000 module_L1t_halfmodule_stereo
+11303   0.000000  -1.000000 module_L2t_halfmodule_axial
+11304   0.000000  -1.000000 module_L2t_halfmodule_stereo
+11305   0.000000  -1.000000 module_L3t_halfmodule_axial
+11306   0.000000  -1.000000 module_L3t_halfmodule_stereo
+11307   0.000000  -1.000000 module_L4t_halfmodule_stereo
+11308   0.000000  -1.000000 module_L4t_halfmodule_axial
+11309   0.000000  -1.000000 module_L5t_halfmodule_axial_hole
+11310   0.000000  -1.000000 module_L5t_halfmodule_stereo_hole
+11311   0.000000  -1.000000 module_L5t_halfmodule_axial_slot
+11312   0.000000  -1.000000 module_L5t_halfmodule_stereo_slot
+11313   0.000000  -1.000000 module_L6t_halfmodule_axial_hole
+11314   0.000000  -1.000000 module_L6t_halfmodule_stereo_hole
+11315   0.000000  -1.000000 module_L6t_halfmodule_axial_slot
+11316   0.000000  -1.000000 module_L6t_halfmodule_stereo_slot
+11317   0.000000  -1.000000 module_L7t_halfmodule_axial_hole
+11318   0.000000  -1.000000 module_L7t_halfmodule_stereo_hole
+11319   0.000000  -1.000000 module_L7t_halfmodule_axial_slot
+11320   0.000000  -1.000000 module_L7t_halfmodule_stereo_slot
+12101   0.000000  -1.000000 module_L1t_halfmodule_axial
+12102   0.000000  -1.000000 module_L1t_halfmodule_stereo
+12103   0.000000  -1.000000 module_L2t_halfmodule_axial
+12104   0.000000  -1.000000 module_L2t_halfmodule_stereo
+12105   0.000000  -1.000000 module_L3t_halfmodule_axial
+12106   0.000000  -1.000000 module_L3t_halfmodule_stereo
+12107   0.000000  -1.000000 module_L4t_halfmodule_stereo
+12108   0.000000  -1.000000 module_L4t_halfmodule_axial
+12109   0.000000  -1.000000 module_L5t_halfmodule_axial_hole
+12110   0.000000  -1.000000 module_L5t_halfmodule_stereo_hole
+12111   0.000000  -1.000000 module_L5t_halfmodule_axial_slot
+12112   0.000000  -1.000000 module_L5t_halfmodule_stereo_slot
+12113   0.000000  -1.000000 module_L6t_halfmodule_axial_hole
+12114   0.000000  -1.000000 module_L6t_halfmodule_stereo_hole
+12115   0.000000  -1.000000 module_L6t_halfmodule_axial_slot
+12116   0.000000  -1.000000 module_L6t_halfmodule_stereo_slot
+12117   0.000000  -1.000000 module_L7t_halfmodule_axial_hole
+12118   0.000000  -1.000000 module_L7t_halfmodule_stereo_hole
+12119   0.000000  -1.000000 module_L7t_halfmodule_axial_slot
+12120   0.000000  -1.000000 module_L7t_halfmodule_stereo_slot
+12201   0.000000  -1.000000 module_L1t_halfmodule_axial
+12202   0.000000  -1.000000 module_L1t_halfmodule_stereo
+12203   0.000000  -1.000000 module_L2t_halfmodule_axial
+12204   0.000000  -1.000000 module_L2t_halfmodule_stereo
+12205   0.000000  -1.000000 module_L3t_halfmodule_axial
+12206   0.000000  -1.000000 module_L3t_halfmodule_stereo
+12207   0.000000  -1.000000 module_L4t_halfmodule_stereo
+12208   0.000000  -1.000000 module_L4t_halfmodule_axial
+12209   0.000000  -1.000000 module_L5t_halfmodule_axial_hole
+12210   0.000000  -1.000000 module_L5t_halfmodule_stereo_hole
+12211   0.000000  -1.000000 module_L5t_halfmodule_axial_slot
+12212   0.000000  -1.000000 module_L5t_halfmodule_stereo_slot
+12213   0.000000  -1.000000 module_L6t_halfmodule_axial_hole
+12214   0.000000  -1.000000 module_L6t_halfmodule_stereo_hole
+12215   0.000000  -1.000000 module_L6t_halfmodule_axial_slot
+12216   0.000000  -1.000000 module_L6t_halfmodule_stereo_slot
+12217   0.000000  -1.000000 module_L7t_halfmodule_axial_hole
+12218   0.000000  -1.000000 module_L7t_halfmodule_stereo_hole
+12219   0.000000  -1.000000 module_L7t_halfmodule_axial_slot
+12220   0.000000  -1.000000 module_L7t_halfmodule_stereo_slot
+!12301   0.000000  -1.000000 module_L1t_halfmodule_axial
+!12302   0.000000  -1.000000 module_L1t_halfmodule_stereo
+!12303   0.000000  -1.000000 module_L2t_halfmodule_axial
+!12304   0.000000  -1.000000 module_L2t_halfmodule_stereo
+12305   0.000000  -1.000000 module_L3t_halfmodule_axial
+12306   0.000000  -1.000000 module_L3t_halfmodule_stereo
+12307   0.000000  -1.000000 module_L4t_halfmodule_stereo
+12308   0.000000  -1.000000 module_L4t_halfmodule_axial
+12309   0.000000  -1.000000 module_L5t_halfmodule_axial_hole
+12310   0.000000  -1.000000 module_L5t_halfmodule_stereo_hole
+12311   0.000000  -1.000000 module_L5t_halfmodule_axial_slot
+12312   0.000000  -1.000000 module_L5t_halfmodule_stereo_slot
+12313   0.000000  -1.000000 module_L6t_halfmodule_axial_hole
+12314   0.000000  -1.000000 module_L6t_halfmodule_stereo_hole
+12315   0.000000  -1.000000 module_L6t_halfmodule_axial_slot
+12316   0.000000  -1.000000 module_L6t_halfmodule_stereo_slot
+12317   0.000000  -1.000000 module_L7t_halfmodule_axial_hole
+12318   0.000000  -1.000000 module_L7t_halfmodule_stereo_hole
+12319   0.000000  -1.000000 module_L7t_halfmodule_axial_slot
+12320   0.000000  -1.000000 module_L7t_halfmodule_stereo_slot
+21101   0.000000  -1.000000 module_L1b_halfmodule_stereo
+21102   0.000000  -1.000000 module_L1b_halfmodule_axial
+21103   0.000000  -1.000000 module_L2b_halfmodule_stereo
+21104   0.000000  -1.000000 module_L2b_halfmodule_axial
+21105   0.000000  -1.000000 module_L3b_halfmodule_stereo
+21106   0.000000  -1.000000 module_L3b_halfmodule_axial
+21107   0.000000  -1.000000 module_L4b_halfmodule_stereo
+21108   0.000000  -1.000000 module_L4b_halfmodule_axial
+21109   0.000000  -1.000000 module_L5b_halfmodule_stereo_hole
+21110   0.000000  -1.000000 module_L5b_halfmodule_axial_hole
+21111   0.000000  -1.000000 module_L5b_halfmodule_stereo_slot
+21112   0.000000  -1.000000 module_L5b_halfmodule_axial_slot
+21113   0.000000  -1.000000 module_L6b_halfmodule_stereo_hole
+21114   0.000000  -1.000000 module_L6b_halfmodule_axial_hole
+21115   0.000000  -1.000000 module_L6b_halfmodule_stereo_slot
+21116   0.000000  -1.000000 module_L6b_halfmodule_axial_slot
+21117   0.000000  -1.000000 module_L7b_halfmodule_stereo_hole
+21118   0.000000  -1.000000 module_L7b_halfmodule_axial_hole
+21119   0.000000  -1.000000 module_L7b_halfmodule_stereo_slot
+21120   0.000000  -1.000000 module_L7b_halfmodule_axial_slot
+21201   0.000000  -1.000000 module_L1b_halfmodule_stereo
+21202   0.000000  -1.000000 module_L1b_halfmodule_axial
+21203   0.000000  -1.000000 module_L2b_halfmodule_stereo
+21204   0.000000  -1.000000 module_L2b_halfmodule_axial
+21205   0.000000  -1.000000 module_L3b_halfmodule_stereo
+21206   0.000000  -1.000000 module_L3b_halfmodule_axial
+21207   0.000000  -1.000000 module_L4b_halfmodule_stereo
+21208   0.000000  -1.000000 module_L4b_halfmodule_axial
+21209   0.000000  -1.000000 module_L5b_halfmodule_stereo_hole
+21210   0.000000  -1.000000 module_L5b_halfmodule_axial_hole
+21211   0.000000  -1.000000 module_L5b_halfmodule_stereo_slot
+21212   0.000000  -1.000000 module_L5b_halfmodule_axial_slot
+21213   0.000000  -1.000000 module_L6b_halfmodule_stereo_hole
+21214   0.000000  -1.000000 module_L6b_halfmodule_axial_hole
+21215   0.000000  -1.000000 module_L6b_halfmodule_stereo_slot
+21216   0.000000  -1.000000 module_L6b_halfmodule_axial_slot
+21217   0.000000  -1.000000 module_L7b_halfmodule_stereo_hole
+21218   0.000000  -1.000000 module_L7b_halfmodule_axial_hole
+21219   0.000000  -1.000000 module_L7b_halfmodule_stereo_slot
+21220   0.000000  -1.000000 module_L7b_halfmodule_axial_slot
+21301   0.000000  -1.000000 module_L1b_halfmodule_stereo
+21302   0.000000  -1.000000 module_L1b_halfmodule_axial
+21303   0.000000  -1.000000 module_L2b_halfmodule_stereo
+21304   0.000000  -1.000000 module_L2b_halfmodule_axial
+21305   0.000000  -1.000000 module_L3b_halfmodule_stereo
+21306   0.000000  -1.000000 module_L3b_halfmodule_axial
+21307   0.000000  -1.000000 module_L4b_halfmodule_stereo
+21308   0.000000  -1.000000 module_L4b_halfmodule_axial
+21309   0.000000  -1.000000 module_L5b_halfmodule_stereo_hole
+21310   0.000000  -1.000000 module_L5b_halfmodule_axial_hole
+21311   0.000000  -1.000000 module_L5b_halfmodule_stereo_slot
+21312   0.000000  -1.000000 module_L5b_halfmodule_axial_slot
+21313   0.000000  -1.000000 module_L6b_halfmodule_stereo_hole
+21314   0.000000  -1.000000 module_L6b_halfmodule_axial_hole
+21315   0.000000  -1.000000 module_L6b_halfmodule_stereo_slot
+21316   0.000000  -1.000000 module_L6b_halfmodule_axial_slot
+21317   0.000000  -1.000000 module_L7b_halfmodule_stereo_hole
+21318   0.000000  -1.000000 module_L7b_halfmodule_axial_hole
+21319   0.000000  -1.000000 module_L7b_halfmodule_stereo_slot
+21320   0.000000  -1.000000 module_L7b_halfmodule_axial_slot
+22101   0.000000  -1.000000 module_L1b_halfmodule_stereo
+22102   0.000000  -1.000000 module_L1b_halfmodule_axial
+22103   0.000000  -1.000000 module_L2b_halfmodule_stereo
+22104   0.000000  -1.000000 module_L2b_halfmodule_axial
+22105   0.000000  -1.000000 module_L3b_halfmodule_stereo
+22106   0.000000  -1.000000 module_L3b_halfmodule_axial
+22107   0.000000  -1.000000 module_L4b_halfmodule_stereo
+22108   0.000000  -1.000000 module_L4b_halfmodule_axial
+22109   0.000000  -1.000000 module_L5b_halfmodule_stereo_hole
+22110   0.000000  -1.000000 module_L5b_halfmodule_axial_hole
+22111   0.000000  -1.000000 module_L5b_halfmodule_stereo_slot
+22112   0.000000  -1.000000 module_L5b_halfmodule_axial_slot
+22113   0.000000  -1.000000 module_L6b_halfmodule_stereo_hole
+22114   0.000000  -1.000000 module_L6b_halfmodule_axial_hole
+22115   0.000000  -1.000000 module_L6b_halfmodule_stereo_slot
+22116   0.000000  -1.000000 module_L6b_halfmodule_axial_slot
+22117   0.000000  -1.000000 module_L7b_halfmodule_stereo_hole
+22118   0.000000  -1.000000 module_L7b_halfmodule_axial_hole
+22119   0.000000  -1.000000 module_L7b_halfmodule_stereo_slot
+22120   0.000000  -1.000000 module_L7b_halfmodule_axial_slot
+22201   0.000000  -1.000000 module_L1b_halfmodule_stereo
+22202   0.000000  -1.000000 module_L1b_halfmodule_axial
+22203   0.000000  -1.000000 module_L2b_halfmodule_stereo
+22204   0.000000  -1.000000 module_L2b_halfmodule_axial
+22205   0.000000  -1.000000 module_L3b_halfmodule_stereo
+22206   0.000000  -1.000000 module_L3b_halfmodule_axial
+22207   0.000000  -1.000000 module_L4b_halfmodule_stereo
+22208   0.000000  -1.000000 module_L4b_halfmodule_axial
+22209   0.000000  -1.000000 module_L5b_halfmodule_stereo_hole
+22210   0.000000  -1.000000 module_L5b_halfmodule_axial_hole
+22211   0.000000  -1.000000 module_L5b_halfmodule_stereo_slot
+22212   0.000000  -1.000000 module_L5b_halfmodule_axial_slot
+22213   0.000000  -1.000000 module_L6b_halfmodule_stereo_hole
+22214   0.000000  -1.000000 module_L6b_halfmodule_axial_hole
+22215   0.000000  -1.000000 module_L6b_halfmodule_stereo_slot
+22216   0.000000  -1.000000 module_L6b_halfmodule_axial_slot
+22217   0.000000  -1.000000 module_L7b_halfmodule_stereo_hole
+22218   0.000000  -1.000000 module_L7b_halfmodule_axial_hole
+22219   0.000000  -1.000000 module_L7b_halfmodule_stereo_slot
+22220   0.000000  -1.000000 module_L7b_halfmodule_axial_slot
+!22301   0.000000  -1.000000 module_L1b_halfmodule_stereo
+!22302   0.000000  -1.000000 module_L1b_halfmodule_axial
+22303   0.000000  -1.000000 module_L2b_halfmodule_stereo
+22304   0.000000  -1.000000 module_L2b_halfmodule_axial
+!22305   0.000000  -1.000000 module_L3b_halfmodule_stereo
+!22306   0.000000  -1.000000 module_L3b_halfmodule_axial
+!22307   0.000000  -1.000000 module_L4b_halfmodule_stereo
+!22308   0.000000  -1.000000 module_L4b_halfmodule_axial
+22309   0.000000  -1.000000 module_L5b_halfmodule_stereo_hole
+22310   0.000000  -1.000000 module_L5b_halfmodule_axial_hole
+22311   0.000000  -1.000000 module_L5b_halfmodule_stereo_slot
+22312   0.000000  -1.000000 module_L5b_halfmodule_axial_slot
+22313   0.000000  -1.000000 module_L6b_halfmodule_stereo_hole
+22314   0.000000  -1.000000 module_L6b_halfmodule_axial_hole
+22315   0.000000  -1.000000 module_L6b_halfmodule_stereo_slot
+22316   0.000000  -1.000000 module_L6b_halfmodule_axial_slot
+22317   0.000000  -1.000000 module_L7b_halfmodule_stereo_hole
+22318   0.000000  -1.000000 module_L7b_halfmodule_axial_hole
+22319   0.000000  -1.000000 module_L7b_halfmodule_stereo_slot
+22320   0.000000  -1.000000 module_L7b_halfmodule_axial_slot
+11161   0.0        0.0 
+11261   0.0       -1.0 
+11361   0.0       -1.0 
+12161   0.0       -1.0 
+12261   0.0       -1.0 
+12361   0.0       -1.0 
+11162   0.0       -1.0 
+11262   0.0       -1.0 
+11362   0.0       -1.0 
+12162   0.0       -1.0 
+12262   0.0       -1.0 
+12362   0.0       -1.0 
+11163   0.0       -1.0 
+11263   0.0       -1.0 
+11363   0.0       -1.0 
+12163   0.0       -1.0 
+12263   0.0       -1.0 
+12363   0.0       -1.0 
+11164   0.0       -1.0 
+11264   0.0       -1.0 
+11364   0.0       -1.0 
+12164   0.0       -1.0 
+12264   0.0       -1.0 
+12364   0.0       -1.0 
+11165   0.0       -1.0 
+11265   0.0       -1.0 
+11365   0.0       -1.0 
+12165   0.0       -1.0 
+12265   0.0       -1.0 
+12365   0.0       -1.0 
+11166   0.0       -1.0 
+11266   0.0       -1.0 
+11366   0.0       -1.0 
+12166   0.0       -1.0 
+12266   0.0       -1.0 
+12366   0.0       -1.0 
+11167   0.0       -1.0 
+11267   0.0       -1.0 
+11367   0.0       -1.0 
+12167   0.0       -1.0 
+12267   0.0       -1.0 
+12367   0.0       -1.0 
+21161   0.0       -1.0 
+21261   0.0       -1.0 
+21361   0.0       -1.0 
+22161   0.0       -1.0 
+22261   0.0       -1.0 
+22361   0.0       -1.0 
+21162   0.0       -1.0 
+21262   0.0       -1.0 
+21362   0.0       -1.0 
+22162   0.0       -1.0 
+22262   0.0       -1.0 
+22362   0.0       -1.0 
+21163   0.0       -1.0 
+21263   0.0       -1.0 
+21363   0.0       -1.0 
+22163   0.0       -1.0 
+22263   0.0       -1.0 
+22363   0.0       -1.0 
+21164   0.0       -1.0 
+21264   0.0       -1.0 
+21364   0.0       -1.0 
+22164   0.0       -1.0 
+22264   0.0       -1.0 
+22364   0.0       -1.0 
+21165   0.0       -1.0 
+21265   0.0       -1.0 
+21365   0.0       -1.0 
+22165   0.0       -1.0 
+22265   0.0       -1.0 
+22365   0.0       -1.0 
+21166   0.0       -1.0 
+21266   0.0       -1.0 
+21366   0.0       -1.0 
+22166   0.0       -1.0 
+22266   0.0       -1.0 
+22366   0.0       -1.0 
+21167   0.0       -1.0 
+21267   0.0       -1.0 
+21367   0.0       -1.0 
+22167   0.0       -1.0 
+22267   0.0       -1.0 
+22367   0.0       -1.0 
+
+!Constraint 0.0
+!11101 1.
+!11102 0.995
+
+!Constraint 0.0
+12301 1.
+12302 1.
+
+
+!Measurement 0. 2.
+!11301 1.
+!11307 -1.
+
+printrecord -1 -1
+
+!chiscut 1000. 200.
+chiscut 100. 30.
+outlierdownweighting 2
+method inversion 5 1.
+!method diagonalization 6 1.
+
+histprint
+
+end
