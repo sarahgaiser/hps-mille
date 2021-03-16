@@ -54,16 +54,9 @@ def main():
         else:
             sys.exit(1)
     
-    subprocess.call(cmd.split())
+    subprocess.check_call(cmd.split())
     
 
-    #Remove the lcdd in the new folder
-    cmd = "rm " + defaultDetectorLocation +Tag + "*lcdd"
-    print cmd.split()
-    
-    subprocess.call(cmd.split())
-    
-    
     #Now change the detector information inside the compact
     outputCompactXML =  defaultDetectorLocation +Tag + "/compact.xml"
 
@@ -107,6 +100,16 @@ def main():
     cmd = "mv ./compact_millepede.xml" + " " + outputCompactXML
     print cmd
     subprocess.call(cmd.split())
+
+
+    #Remove the lcdd in the new folder
+    cmd = "rm " + defaultDetectorLocation +Tag + "/"+args.inputTag+".lcdd"
+    print cmd.split()
+    
+    subprocess.check_call(cmd.split())
+    
+    
+
     
     
 if __name__=="__main__":
