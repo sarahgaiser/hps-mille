@@ -371,4 +371,3 @@ MilleParameter                              Sensor          half   trans./rot.  
          22190               back_support_bot                  2             2             1            90
          22290               back_support_bot                  2             2             2            90
          22390               back_support_bot                  2             2             3            90
-                  
