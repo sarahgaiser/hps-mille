@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import argparse, subprocess, sys, os.path, re
+import glob
 from utils import Parameter, printResults, getParamsFromModule,getMinimStr, beamspotAxialId, beamspotStereoId,paramMap
 import buildSteering
 
@@ -12,7 +13,7 @@ def getArgs():
     parser.add_argument('-l','--flist',help="File list of binary input files.",default="")
     parser.add_argument('-y','--year',dest="year",help="Which detector geometry? (2016 or 2019 [default])",default="2019")
     parser.add_argument('-o','--outDir',dest="outDir",help="Path to folder to where to move the outputs",default="./MPII_results_")
-    #parser.add_argument('-z','--inDir',help="Folder containing the millepede.bin files")
+    parser.add_argument('-z','--inDir',help="Folder containing the millepede.bin files")
     parser.add_argument('-M','--Modules', nargs='+', help='List of modules to float, e.g. L3b L5b')
     parser.add_argument('-p','--parameters', help='Default parameters')
     parser.add_argument('-m','--minimization', default='steering/steer_minimization_template.txt', help='Default minimization settings')
@@ -23,7 +24,9 @@ def getArgs():
     parser.add_argument('-c','--constraints', dest="constraints", help="Constraint file",default="")
     parser.add_argument('--SC', action='store_true',help='Survey constraint')
     parser.add_argument('--BSC', action='store_true',help='Beamspot constraint')
+    parser.add_argument('--PC', action='store_true',help='Momentum constraint')
     args = parser.parse_args()
+
     print args
     return args
 
@@ -53,6 +56,21 @@ def getDefaultParams(beamspot=False,year="2019"):
                     mpId = str(h) + str(t) + str(d) + s
                     p = Parameter(int(mpId),0.0,-1.0)
                     pars.append(p)
+                    
+                #Add the modules
+                r = range(61,68)
+                for module in r:
+                    mpId = str(h) + str(t) + str(d) + str(module)
+                    p = Parameter(int(mpId),0.0,-1.0)
+                    pars.append(p)
+                
+                #Add the support
+                r = [80,90]
+                for support in r:
+                    mpId = str(h)+str(t) +str(d) + str(support)
+                    p = Parameter(int(mpId),0.0,-1.0)
+                    pars.append(p)
+    
     return pars
 
 def getParams(parfilename):
@@ -106,7 +124,18 @@ def updateParams(pars,otherparms,resetActive=True):
     return parsnew
 
 
-def buildSteerFile(name,inputfiles,flist,pars,minimStr,constraintFile="",surveyConstraints=False,beamspotConstraints=False):
+def buildSteerFile(name,args,pars,minimStr):
+    
+    
+    inputfiles          = args.inputfiles
+    flist               = args.flist
+    constraintFile      = args.constraints
+    surveyConstraints   = args.SC
+    beamspotConstraints =  args.BSC
+
+
+    #Build the input files list
+    
     try:
         f = open(name,'w')
     except IOError:
@@ -123,6 +152,20 @@ def buildSteerFile(name,inputfiles,flist,pars,minimStr,constraintFile="",surveyC
             for line in ilist.readlines():
                 f.write(line.strip() + "\n")
             ilist.close()
+
+        if (len(args.inDir)>0):
+            #The inputFolder with the files
+            re="all_"
+            if (args.BSC):
+                re+="_BC_"
+            if (args.PC):
+                re+="_PC_"
+            
+            print "Glob:",args.inDir+"/outputFiles/*/*"+re+"millepede.bin"
+            binFiles = glob.glob(args.inDir+"/outputFiles/*/*"+re+"millepede.bin")
+        
+            for ifile in binFiles:
+                f.write(ifile.strip() +"\n")
         
         #The external constraint file
         if (constraintFile!=""):
@@ -134,8 +177,10 @@ def buildSteerFile(name,inputfiles,flist,pars,minimStr,constraintFile="",surveyC
         #The floating parameters
         f.write("\nParameter\n")
         for p in pars:
+            #if p.isActive():
+            #    print p.i
             f.write(p.toString() + "\n")
-
+            
         #Apply survey constants
         if surveyConstraints:
             f.write(buildSteering.getSurveyMeasurements(paramMap))
@@ -194,7 +239,6 @@ def main(args):
         for p in pars:
             print p.toString()
     
-
     # check if there is a supplied parameter file.
     # this could be a result file from a previous fit
     print "Parameters:", args.parameters
@@ -243,15 +287,18 @@ def main(args):
     # build the actual steering file
     name = "steer.txt"
     
-    if len(args.inputfiles)==0 and len(args.flist)==0:
-        print "Specify input files [-i <inputfiles> ] or list of input files [-z <filelist>]"
+    if len(args.inputfiles)==0 and len(args.flist)==0 and len(args.inDir)==0:
+        print "Specify input files [-i <inputfiles> ] or list of input files [-l <filelist>] or inputDirectory [-z <inDir>]"
         sys.exit(1)
 
-    ok = buildSteerFile(name,args.inputfiles,args.flist,pars,minimStr,args.constraints, args.SC,args.BSC)
+    #ok = buildSteerFile(name,args.inputfiles,args.flist,pars,minimStr,args.constraints, args.SC,args.BSC)
+    ok = buildSteerFile(name,args,pars,minimStr)
+    
     if not ok:
         print "Couldn't build steering file"
         sys.exit(1)
 
+    
     # run the fit
     runPede(name,args)
 
