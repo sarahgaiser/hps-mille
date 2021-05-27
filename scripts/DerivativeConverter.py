@@ -37,8 +37,27 @@ class DerivativeConverter:
                 
         res_file.close()
         
+    
+    # This generates some misalignments of a structure and dumps them in a misalignment file
+    # File has to be previously openend
+    
+    def generateMisalignments(self, 
+                              s_name, 
+                              outfile,
+                              misalignments=[0.0,0.0,0.0,0.0,0.0,0.0],
+                              threshold=1e-6):
+        
+        structure=self.avs[s_name]
+        
+        for ilabel in range(len(structure["derivativeLabels"])):
+            
+            outfile.write(" "+str(structure["derivativeLabels"][ilabel]) + "     "+str(round(misalignments[ilabel],4))+"     -1.0000\n")
+            
+    
+        
 
 
+        
     #This give the parents corrections
     def computeParentCorrections(self,s_name,
                                  d_Name="",
@@ -55,7 +74,8 @@ class DerivativeConverter:
             corrections = self.computeParentCorrections(structure["parent"],s_name,corrections)
                         
         #Get the corrections from MPII of this structure and add the ones from the parent. 
-        this_corrections = np.array([float(self.results[str(x)]) for x in structure["derivativeLabels"]])
+        this_corrections = np.array([float(self.results[str(x)]) if str(x) in self.results.keys() else 0.0 for x in structure["derivativeLabels"]])
+        print(this_corrections)
         mpII_corrections = this_corrections + corrections
         
         #form a vector with the corrections of this structure
