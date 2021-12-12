@@ -9,6 +9,7 @@ def OptionParse():
     parser.add_argument("-o","--outputTag",help="Output detector tag (if not specified, just increase iteration",default="")
     parser.add_argument("-r","--residuals",required=True,help="Residuals to add to the compact",default="")
     parser.add_argument("-c","--clean",help="Force cleaning of the output folder if it exists",action="store_true",default=False)
+    parser.add_argument("-f","--flipRotations", help="Switches OFF the rotations flips. Only Rw should be not flipped", action="store_false",default=True)
     args = parser.parse_args()
     return args
 
@@ -28,7 +29,7 @@ def main():
     #print iteration
     
     #Make the outputTag. Always maintain the iteration number
-    baseTag   = args.inputTag.split("iter")[0]
+    baseTag   = args.inputTag.split("_iter")[0]
     outputTag = args.outputTag
     if (outputTag != ""):
         if ("HPS_" not in outputTag):
@@ -76,7 +77,7 @@ def main():
     
     compact_file.close()
     
-    out_compact_file = open(outputCompactXML,"w")
+    out_compact_file = open(outputCompactXML,"wb")
     out_compact_file.writelines(list_of_lines)
     out_compact_file.close()
     
@@ -88,16 +89,20 @@ def main():
     subprocess.call(cmd.split())
     
     #Call buildCompact
-    distributionBinary = args.javaFolder+"/distribution/target/hps-distribution-4.5-SNAPSHOT-bin.jar"
+    distributionBinary = args.javaFolder+"/distribution/target/hps-distribution-5.1-SNAPSHOT-bin.jar"
     residuals          = args.residuals
     
+    
     cmd = "python scripts/buildCompact.py -c compact.xml -j " + distributionBinary + " -r " + args.residuals + " -t"
+
+    if args.flipRotations:
+        cmd += " -f"
     print cmd.split()
     subprocess.call(cmd.split())
     
     #Copy the compact_millepede.xml to the original location
 
-    cmd = "mv ./compact_millepede.xml" + " " + outputCompactXML
+    cmd = "mv ./compact_" + (args.residuals.split("/")[-1]).split(".res")[0]+".xml " + outputCompactXML
     print cmd
     subprocess.call(cmd.split())
 

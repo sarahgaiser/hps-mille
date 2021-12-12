@@ -10,9 +10,25 @@ def main():
     misfile = open("misalignmentFile.txt","w")
     misfile.write(" Parameter ! Generated misalignments\n")
     
-    dc.generateMisalignments("Volume_Top",
+    #dc.generateMisalignments("Volume_Top",
+    #                         misfile,
+    #                         [0.1,0.2,0.,0.,0.,0.])
+    
+    
+    #VOLUME TOP 
+    #Tu,Tv recoverable (BS constraint is necessary)
+    #Rv not recoverable
+    #Rw not recoverable
+    #Tz
+    #dc.generateMisalignments("Volume_Top",
+    #                         misfile,
+    #                         [0.0,0.0,0.4,0.000,0.000,0.000])
+    
+    
+    # UChannel Rot Rv 0.5mrad
+    dc.generateMisalignments("UChannelL14_Top_AV",
                              misfile,
-                             [0.1,0.2,0.,0.,0.,0.])
+                             [0.0,0.0,0.0,0.0,0.0005,0.0])
     
     misfile.close()
     
@@ -27,7 +43,7 @@ def main():
     
     out = open("mpII_mis_residuals.res","w")
 
-    out.write(" Parameter  ! first 3 elements per line are significant (if used as input)")
+    out.write(" Parameter  ! first 3 elements per line are significant (if used as input) \n")
     
     for sensor in SensorsList:
         TotalCorrections[sensor] = dc.computeParentCorrections(sensor)

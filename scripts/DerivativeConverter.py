@@ -158,7 +158,7 @@ def main():
     TotalCorrections={}
     
     out = open(args.output,"w")
-    out.write(" Parameter  ! first 3 elements per line are significant (if used as input)")
+    out.write(" Parameter  ! first 3 elements per line are significant (if used as input) \n")
     
     for sensor in SensorsList:
         TotalCorrections[sensor] = dc.computeParentCorrections(sensor)
