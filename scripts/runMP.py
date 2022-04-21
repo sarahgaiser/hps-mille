@@ -25,6 +25,7 @@ def getArgs():
     parser.add_argument('--SC', action='store_true',help='Survey constraint')
     parser.add_argument('--BSC', action='store_true',help='Beamspot constraint')
     parser.add_argument('--PC', action='store_true',help='Momentum constraint')
+    parser.add_argument('--slot', action='store_true',help='onlySlot')
     parser.add_argument('--HC', dest="HierConstr", help="Hierarchical constraint",default="")
     args = parser.parse_args()
 
@@ -156,14 +157,18 @@ def buildSteerFile(name,args,pars,minimStr):
         
         if (args.inDir != None and len(args.inDir)>0):
             #The inputFolder with the files
-            re="all_"
+            re="all_millepede_ST.bin"
             if (args.BSC):
                 re+="BSC_"
+            if (args.slot):
+                re="*slot*"
             if (args.PC):
-                re+="PC_*"
-            
-            print "Glob:",args.inDir+"/outputFiles/*/*"+re+"millepede.bin"
-            binFiles = glob.glob(args.inDir+"/outputFiles/*/*"+re+"millepede.bin")
+                #re+="*_PC_*"
+                re="*PC*"
+
+
+            print "Glob:",args.inDir+"/outputFiles/*/*"+re
+            binFiles = glob.glob(args.inDir+"/outputFiles/*/*"+re)
         
             for ifile in binFiles:
                 f.write(ifile.strip() +"\n")
