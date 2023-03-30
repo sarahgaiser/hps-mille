@@ -1,6 +1,7 @@
 from DerivativeConverter import DerivativeConverter
 import numpy as np
-import argparse
+import math
+import argparse,sys
 
 def getArgs():
     parser = argparse.ArgumentParser(description="MPII misalignment creator")
@@ -9,6 +10,101 @@ def getArgs():
     args = parser.parse_args()
     print(args)
     return args
+
+
+
+#Twist
+#Choose and axis
+#Choose a scaling parameter for the angular twist
+#Decide which volume
+#Pass the misalignment file
+#Derivative converter tool
+
+#Twist is implemented in the modules
+def twist(dc, misfile,
+          axis, scaling = 5e-6, volume="Top"):
+
+    print("Misalignment tool: Creating twist misalignment")
+    
+    moduleList = ["ModuleL"+str(i)+"_"+volume+"_AV" for i in range(1,8)]
+    #print(moduleList)
+    
+    
+
+    for module in moduleList:
+        structure = dc.avs[module]
+        #print("Structure origin in global frame")
+        origin   = np.array(structure["origin"])
+        rotation = np.array(structure["rotation"]) 
+
+        #Transform into the SVT Frame 
+        #The modules are oriented as axial sensors, so I can cheat
+        #and build the matrix from the rotation matrix above
+        #this should be roughly 30.5 mrad
+        #print(rotation)
+        #!! Careful about the sign of this. This is local to global. 
+        svt_angle = rotation[0,2]
+        #!! Here I will change the sign to have the global rotation of the SVT wrt GLOBAL
+        cos_svt = math.cos(-svt_angle)
+        sin_svt = math.sin(-svt_angle)
+        #And this is now the matrix from svt to global!
+        svt2global = np.array([[cos_svt,0,sin_svt],[0,1,0],[-sin_svt,0,cos_svt]])
+        global2svt = svt2global.transpose()
+        
+        
+        #Get the origin in the SVT plane
+        originT = origin.reshape(3,1)
+        
+        origin_svt = global2svt.dot(originT)
+        twist_angle = scaling * origin_svt[2,0]
+        #print("ORIGIN SVT and TWIST",origin_svt,twist_angle)
+        cost = math.cos(twist_angle)
+        sint = math.sin(twist_angle)
+
+        #If the twist_angle is positive, rotate clockwise along SVT-Z axis
+        rot = np.array([cost,-sint,0,sint,cost,0,0,0,1])
+        rot = rot.reshape(3,3)
+        
+        print("TWIST ROTATION")
+        print(rot)
+        print("ORIGIN SVT")
+        print(origin_svt)
+        rot_origin_svt = rot.dot(origin_svt)
+                
+        print("ROTATED SVT")
+        print(rot_origin_svt)
+
+        #Now I have to compute the local changes.
+        #I think it should be more correct to first correct the l2g rotation matrix by the angle and then
+        #transform. (?) 
+
+        DeltaSVT    = rot_origin_svt - origin_svt #in the svt frame
+        
+        DeltaGlobal = svt2global.dot(DeltaSVT) #in the global frame
+        
+        TwistedModuleRotation = np.dot(rot,rotation)
+        
+        
+        #DeltaLocal  = (rotation.transpose()).dot(DeltaGlobal) #in the local frame
+        DeltaLocal  = (TwistedModuleRotation.transpose()).dot(DeltaGlobal) #in the local frame
+        
+        #DEBUG TWIST
+        print("DeltaSVT = ",    DeltaSVT)
+        print("DeltaGlobal = ", DeltaGlobal)
+        print("DeltaLocal  = ", DeltaLocal)
+        
+        #IMPORTANT. The Module W axis has the opposite sign wrt the SVT Z axis.
+        #So I need to change sign here.
+        Rw = -twist_angle
+        #print("a"+str(DeltaLocal[0,0]))
+
+        #Since the misalignment tool changes the sign, I will flip the Delta and rotations
+        print(module, "["+str(DeltaLocal[0,0])+","+str(DeltaLocal[1,0])+",0.0,0.0,0.0,"+str(Rw)+"]")
+        dc.generateMisalignments(module,
+                                 misfile,
+                                 [-DeltaLocal[0,0],-DeltaLocal[1,0],0.,0.,0.,-Rw])  #!!!
+        
+
 
 def main():
     print("Misalignment Tool")
@@ -74,9 +170,9 @@ def main():
     #                         [-0.,0.0,2,0.0,0.0,0.0])
 
     
-    #dc.generateMisalignments("ModuleL6_Top_AV",
+    #dc.generateMisalignments("ModuleL7_Top_AV",
     #                         misfile,
-    #                         [-0.,0.0,2,0.0,0.0,0.0])
+    #                         [2,0.0,0.0,0.0,0.0,0.0])
     
     
     #if (args.input == ""):
@@ -85,29 +181,35 @@ def main():
     #Back UChannel Opening Angle - 1mrad
     #dc.generateMisalignments("doublesensor_stereo_L5_Top_AV",
     #                         misfile,
-    #                         [0.0,0.0,2,0.0,0.0,0.0])
+    #                         [0.0,0.0,-1,0.0,0.00,0.0])
 
     #dc.generateMisalignments("doublesensor_stereo_L6_Top_AV",
     #                         misfile,
-    #                         [0.0,0.0,-2,0.0,0.0,0.0])
+    #                         [0.0,0.0,-1,0.0,0.0,0.0])
 
     #dc.generateMisalignments("doublesensor_stereo_L7_Top_AV",
     #                         misfile,
     #                         [0.0,0.0,0,0.0,0.0,0.0])
 
     
-    dc.generateMisalignments("module_L4t_halfmodule_stereo_sensor0_AV",
-                             misfile,
-                             [0.0,0.0, 1.0,0.0,0.0,0.0]) 
+    #dc.generateMisalignments("module_L2t_halfmodule_stereo_sensor0_AV",
+    #                         misfile,
+    #                         [0.0,0.0, 0.0,0.0,0.0,0.01]) 
 
-    dc.generateMisalignments("doublesensor_stereo_L5_Top_AV",
-                             misfile,
-                             [0.0,0.0,-1.0,0.0,0.0,0.0]) 
+    #dc.generateMisalignments("module_L1t_halfmodule_stereo_sensor0_AV",
+    #                         misfile,
+    #                         [0.0,0.0, 0.0,0.0,0.0,0.01]) 
 
-    dc.generateMisalignments("doublesensor_stereo_L6_Top_AV",
-                             misfile,
-                             [0.0,0.0, 1.0,0.0,0.0,0.0]) 
 
+    #dc.generateMisalignments("module_L2b_halfmodule_stereo_sensor0_AV",
+    #                         misfile,
+    #                         [0.0,0.0, 0.0,0.0,0.0,0.01]) 
+
+    #dc.generateMisalignments("module_L1b_halfmodule_stereo_sensor0_AV",
+    #                         misfile,
+    #                         [0.0,0.0, 0.0,0.0,0.0,0.01]) 
+
+    
 
     #dc.generateMisalignments("UChannelL14_Top_AV",
     #                         misfile,
@@ -115,8 +217,13 @@ def main():
 
     #dc.generateMisalignments("UChannelL57_Top_AV",
     #                         misfile,
-    #                         [0.0,0.0,2.0,0.0,0.0,0.0]) 
+    #                         [0.0,0.0,0.0,0.005,0.0,0.00]) 
+    
+    #dc.generateMisalignments("UChannelL14_Top_AV",
+    #                         misfile,
+    #                         [0.0,0.0,0,0.005,0.0,0.0]) 
 
+    
     
 
     #Opening Angle Front
@@ -134,6 +241,9 @@ def main():
     #Rv sensors
     #Tz modules
     
+
+    print("Calling twist...")
+    twist(dc,misfile,[0,0,1.],scaling=1e-4)
 
     
     misfile.close()

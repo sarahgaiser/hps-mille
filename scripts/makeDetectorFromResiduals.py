@@ -89,7 +89,7 @@ def main():
     subprocess.call(cmd.split())
     
     #Call buildCompact
-    distributionBinary = args.javaFolder+"/distribution/target/hps-distribution-5.1-SNAPSHOT-bin.jar"
+    distributionBinary = args.javaFolder+"/distribution/target/hps-distribution-5.2-SNAPSHOT-bin.jar"
     residuals          = args.residuals
     
     
