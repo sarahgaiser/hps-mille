@@ -46,7 +46,7 @@ def Zspacing_const(dc, misfile, spacing=[], volume="Top", debug=False):
     if len(spacing) != 3:
         print("Wrong length of input spacing array! Need 1 or 3 inputs.")
 
-    print("Misalignment tool: Creating tw misalignment in [[L1,L2], [L3,L4], [L5,L6,L7]]: " + spacing)
+    print("Misalignment tool: Creating tw misalignment in [[L1,L2], [L3,L4], [L5,L6,L7]]: " + str(spacing))
 
     if volume == "Top":
         short_vol = "t"
