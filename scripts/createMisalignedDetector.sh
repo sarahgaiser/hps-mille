@@ -1,4 +1,4 @@
-javaFolder=/sdf/group/hps/users/pbutti/sw/hps-java/
+javaFolder=/sdf/group/hps/users/sgaiser/src/hps-java
 iter=$1
 inputTag=$2
 outputTag=$3
@@ -11,5 +11,5 @@ echo "python scripts/makeDetectorFromResiduals.py -i HPS_${inputTag}_${iter} -j 
 
 python scripts/makeDetectorFromResiduals.py -i HPS_${inputTag}_${iter} -j ${javaFolder} -r ${residuals} -o ${outputTag} -c ${flip}
 cd ${javaFolder}
-sh makeNewAlignmentIterationLCDD.sh iter1 ${outputTag}
+#sh makeNewAlignmentIterationLCDD.sh iter1 ${outputTag}
 cd -

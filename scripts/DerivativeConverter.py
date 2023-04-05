@@ -75,7 +75,8 @@ class DerivativeConverter:
                         
         #Get the corrections from MPII of this structure and add the ones from the parent. 
         this_corrections = np.array([float(self.results[str(x)]) if str(x) in self.results.keys() else 0.0 for x in structure["derivativeLabels"]])
-        print(this_corrections)
+        if self._debug:
+	    print(this_corrections)
         mpII_corrections = this_corrections + corrections
         
         #form a vector with the corrections of this structure

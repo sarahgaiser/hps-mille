@@ -16,9 +16,9 @@ def OptionParse():
 
 def main():
     
-    print "makeDetectorFromResiduals.py"
+    #print "makeDetectorFromResiduals.py"
     args = OptionParse()
-    print args
+    #print args
 
     #Get the iteration out of the tag
     iteration = int(args.inputTag.split("iter")[-1])
