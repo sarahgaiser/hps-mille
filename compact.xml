@@ -3,7 +3,7 @@
        xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
        xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
   
-<info name="HPS_newname_iter1"> 
+<info name="HPS_IDEAL_as_L5_m2pt5mm_L6_m4mm_iter1"> 
     <comment>HPS detector for 2019 run with fieldmap,
     Tracker at nominal opening angle, Matt R. Solt  SVT survey inserted as alignment corrections,  
     this detector uses the corrected fieldmap scaled to -1.022T for 4.5 GeV.

@@ -14,7 +14,7 @@ def getArgs():
     return args
 
 
-def Zspacing(dc, misfile, scaling=1e-4, volume="Top", debug=False):
+def Zspacing_prop(dc, misfile, scaling=1e-4, volume="Top", debug=False):
     """Detector z spacing between axial and stereo; proportional to z_sensor"""
 
     print("Misalignment tool: Creating tw misalignment proportional to z_sensor")
@@ -38,15 +38,26 @@ def Zspacing(dc, misfile, scaling=1e-4, volume="Top", debug=False):
             dc.generateMisalignments(module, misfile, [0., 0., zmove, 0., 0., 0.])
 
 
-def Zspacing_const(dc, misfile, spacing=[], volume="Top", debug=False):
-    """Detector z spacing between axial and stereo; constant by section: [L1,L2], [L3,L4], [L5,L6,L7]"""
+def Zspacing(dc, misfile, spacing=[], volume="Top", debug=False):
+    """Detector z spacing between axial and stereo by layer.
+    
+    @param dc
+    @param misfile
+    @param spacing  several inputs possible: [tw] -> all layers +tw
+                                             [tw1, tw2, tw3] -> [L1,L2] +tw1, [L3,L4] +tw2, [L5,L6,L7] +tw3
+                                             [tw1, tw2, ..., tw7] -> L1 + tw1, ..., L7 + tw7
+    @param volume  Top or Bot
+    @param debug  set True for more print output
+    """
 
     if len(spacing) == 1:
-        spacing = [spacing[0], spacing[0], spacing[0]]
-    if len(spacing) != 3:
-        print("Wrong length of input spacing array! Need 1 or 3 inputs.")
+        spacing = [spacing[0], spacing[0], spacing[0], spacing[0], spacing[0], spacing[0], spacing[0]]
+    elif len(spacing) == 3:
+        spacing = [spacing[0], spacing[0], spacing[1], spacing[1], spacing[2], spacing[2], spacing[2]]
+    if len(spacing) != 6:
+        print("Wrong length of input spacing array! Need 1, 3, or 6 inputs.")
 
-    print("Misalignment tool: Creating tw misalignment in [[L1,L2], [L3,L4], [L5,L6,L7]]: " + spacing)
+    print("Misalignment tool: Creating tw misalignment in [L1, L2, L3, L4, L5, L6, L7]: " + str(spacing))
 
     if volume == "Top":
         short_vol = "t"
@@ -58,12 +69,13 @@ def Zspacing_const(dc, misfile, spacing=[], volume="Top", debug=False):
         moduleList += ["doublesensor_" + orientation + "_L" + str(i) + "_" + volume + "_AV" for i in range(5, 8)]
 
         for i in range(len(moduleList)):
-            if i in [0, 1]:
-                zmove = -spacing[0]/2
-            elif i in [2, 3]:
-                zmove = -spacing[1]/2
-            else:
-                zmove = -spacing[2]/2
+            zmove = -spacing[i]/2
+            # if i in [0, 1]:
+            #     zmove = -spacing[0]/2
+            # elif i in [2, 3]:
+            #     zmove = -spacing[1]/2
+            # else:
+            #     zmove = -spacing[2]/2
 
             if debug:
                 print(moduleList[i], "[0.,0.," + str(zmove) + "0.,0.,0." + "]")
@@ -153,19 +165,20 @@ def main():
     misfile = open("misalignmentFile.txt", "w")
     misfile.write(" Parameter ! Generated misalignments\n")
 
-    # dc.generateMisalignments("ModuleL7_Top_AV",
-    #                          misfile,
-    #                          [0.0,0.0,1.0,0.0,0.0,0.0])
+    #dc.generateMisalignments("ModuleL5_Top_AV",
+    #                         misfile,
+    #                         [0.0,0.0,-1.0,0.0,0.0,0.0])
 
-    # dc.generateMisalignments("ModuleL7_Bot_AV",
-    #                          misfile,
-    #                          [0.0,0.0,1.0,0.0,0.0,0.0])
+    #dc.generateMisalignments("ModuleL5_Bot_AV",
+    #                         misfile,
+    #                         [0.0,0.0,1.0,0.0,0.0,0.0])
 
     #print("Calling twist...")
     #twist(dc,misfile,[0,0,1.],scaling=5e-6)
 
-    Zspacing(dc, misfile, scaling=0.5e-2, debug=args.debug)
-    Zspacing_const(dc, misfile, spacing=[0.1, 0.5, 1.0], volume="Bot", debug=args.debug)
+    # Zspacing_prop(dc, misfile, scaling=0.5e-2, volume="Top", debug=args.debug)
+    Zspacing(dc, misfile, spacing=[0.,0.,0.,0.,-2.5,-4.,0.], volume="Top", debug=args.debug)
+    Zspacing(dc, misfile, spacing=[0.,0.,0.,0.,-2.5,-4.,0.], volume="Bot", debug=args.debug)
 
     misfile.close()
 

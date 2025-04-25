@@ -1,4 +1,4 @@
-javaFolder=/sdf/group/hps/users/sgaiser/src/hps-java
+javaFolder=/sdf/group/hps/users/sgaiser/src/hps-java-wtf
 iter=$1
 inputTag=$2
 outputTag=$3
